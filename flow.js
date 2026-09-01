@@ -216,19 +216,25 @@
 
   function syncMomentSelection(selected) {
     const selectedId = selected ? String(selected.id) : "";
-    resultMomentsList.querySelectorAll(".signature-moment").forEach((card) => {
-      card.classList.toggle("is-selected", card.dataset.id === selectedId);
+    resultMomentsList.querySelectorAll('input[name="aura-moment"]').forEach((input) => {
+      input.checked = input.value === selectedId;
     });
-    const hasImage = !!(selected && selected.url);
-    btnDownloadImage.hidden = !hasImage;
+    btnDownloadImage.hidden = !(selected && selected.url);
   }
 
   function applyMomentSelection(id) {
     if (!window.AURA_SIGNATURE || !id) return;
-    window.AURA_SIGNATURE.select(id);
-    const selected = window.AURA_SIGNATURE.getState().selectedSignatureFrame;
+    const sid = String(id);
+    window.AURA_SIGNATURE.select(sid);
+    const state = window.AURA_SIGNATURE.getState();
+    const selected =
+      ((state.topSignatureMoments || []).find((item) => String(item.id) === sid)) ||
+      state.selectedSignatureFrame;
     appState.creation.selectedSignatureFrame = selected;
-    syncMomentSelection(selected);
+    resultMomentsList.querySelectorAll('input[name="aura-moment"]').forEach((input) => {
+      input.checked = input.value === sid;
+    });
+    btnDownloadImage.hidden = !(selected && selected.url);
     if (selected && selected.url) showResultStill(selected.url);
   }
 
@@ -240,20 +246,27 @@
     resultMoments.hidden = moments.length === 0;
     hideResultStill();
     moments.forEach((moment) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "signature-moment";
-      btn.dataset.id = String(moment.id);
-      if (selected && String(selected.id) === String(moment.id)) btn.classList.add("is-selected");
+      const label = document.createElement("label");
+      label.className = "signature-moment";
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "aura-moment";
+      input.value = String(moment.id);
+      input.checked = !!(selected && String(selected.id) === String(moment.id));
+      const card = document.createElement("span");
+      card.className = "signature-moment-card";
       const img = document.createElement("img");
       img.src = moment.url;
       img.alt = "";
       img.draggable = false;
       const stamp = document.createElement("span");
+      stamp.className = "signature-moment-time";
       stamp.textContent = `${String(Math.max(0, Math.round(moment.t / 1000))).padStart(2, "0")}s`;
-      btn.appendChild(img);
-      btn.appendChild(stamp);
-      resultMomentsList.appendChild(btn);
+      card.appendChild(img);
+      card.appendChild(stamp);
+      label.appendChild(input);
+      label.appendChild(card);
+      resultMomentsList.appendChild(label);
     });
     syncMomentSelection(selected);
     btnDownloadMoments.hidden = moments.length < 2;
@@ -842,46 +855,20 @@
     finishRecording();
   });
 
-  document.getElementById("btn-replay").addEventListener("click", (event) => {
-    event.stopPropagation();
-    replayResult();
-  });
-
   resultVideo.addEventListener("click", replayResult);
 
-  let momentTap = null;
-  resultMomentsList.addEventListener("pointerdown", (event) => {
-    const btn = event.target.closest(".signature-moment");
-    if (!btn || !resultMomentsList.contains(btn)) {
-      momentTap = null;
-      return;
-    }
-    momentTap = {
-      id: btn.dataset.id,
-      x: event.clientX,
-      y: event.clientY,
-      pointerId: event.pointerId,
-    };
-  });
-  resultMomentsList.addEventListener("pointerup", (event) => {
-    if (!momentTap || momentTap.pointerId !== event.pointerId) return;
-    const dx = event.clientX - momentTap.x;
-    const dy = event.clientY - momentTap.y;
-    const id = momentTap.id;
-    momentTap = null;
-    if (dx * dx + dy * dy > 100) return;
-    event.preventDefault();
-    applyMomentSelection(id);
-  });
-  resultMomentsList.addEventListener("pointercancel", () => {
-    momentTap = null;
+  resultMomentsList.addEventListener("change", (event) => {
+    const input = event.target;
+    if (!input || input.name !== "aura-moment") return;
+    applyMomentSelection(input.value);
   });
   resultMomentsList.addEventListener("click", (event) => {
-    const btn = event.target.closest(".signature-moment");
-    if (!btn || !resultMomentsList.contains(btn)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    applyMomentSelection(btn.dataset.id);
+    const label = event.target.closest(".signature-moment");
+    if (!label || !resultMomentsList.contains(label)) return;
+    const input = label.querySelector('input[name="aura-moment"]');
+    if (!input) return;
+    input.checked = true;
+    applyMomentSelection(input.value);
   });
 
   btnDownloadImage.addEventListener("click", async (event) => {

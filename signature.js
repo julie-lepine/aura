@@ -568,7 +568,8 @@
   }
 
   function getSelected() {
-    return topMoments.find((item) => item.id === selectedId) || signatureFrame;
+    const sid = String(selectedId);
+    return topMoments.find((item) => String(item.id) === sid) || signatureFrame;
   }
 
   function imageFileName(title, index) {
