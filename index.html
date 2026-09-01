@@ -68,11 +68,18 @@
     <section class="screen" data-screen="result" id="screen-result">
       <div class="result">
         <h1>Ton aura</h1>
-        <video id="result-video" controls playsinline></video>
-        <a class="btn-primary" id="btn-download">Télécharger</a>
-        <button type="button" class="btn-ghost" id="btn-new-aura">
-          Nouvelle aura
-        </button>
+        <div class="result-frame">
+          <video id="result-video" playsinline webkit-playsinline muted loop></video>
+        </div>
+        <p class="result-name" id="result-name"></p>
+        <p class="result-meta" id="result-meta"></p>
+        <div class="result-actions">
+          <a class="btn-primary" id="btn-download">Télécharger</a>
+          <button type="button" class="btn-ghost" id="btn-replay">Rejouer</button>
+          <button type="button" class="btn-ghost" id="btn-new-aura">
+            Nouvelle aura
+          </button>
+        </div>
       </div>
     </section>
 

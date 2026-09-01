@@ -43,6 +43,15 @@
     if (recorderState.url) {
       URL.revokeObjectURL(recorderState.url);
     }
+    if (recorderState.stream) {
+      recorderState.stream.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch (err) {
+          /* ignore */
+        }
+      });
+    }
     recorderState.status = "idle";
     recorderState.recorder = null;
     recorderState.chunks = [];
@@ -56,7 +65,9 @@
     if (!canvas || typeof MediaRecorder === "undefined") {
       throw new Error("recording-unavailable");
     }
-    if (recorderState.status === "recording") return recorderState;
+    if (recorderState.status === "recording" || recorderState.status === "processing" || recorderState.status === "paused") {
+      return recorderState;
+    }
 
     if (recorderState.url) URL.revokeObjectURL(recorderState.url);
     recorderState.blob = null;
@@ -126,6 +137,16 @@
         recorderState.url = URL.createObjectURL(recorderState.blob);
         recorderState.status = "ready";
         recorderState.recorder = null;
+        if (recorderState.stream) {
+          recorderState.stream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch (err) {
+              /* ignore */
+            }
+          });
+          recorderState.stream = null;
+        }
         resolve(recorderState);
       };
       rec.onerror = () => {
@@ -136,10 +157,19 @@
     });
   }
 
-  function fileName() {
-    const day = new Date().toISOString().slice(0, 10);
+  function slugify(value) {
+    const text = String(value || "aura")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return text || "aura";
+  }
+
+  function fileName(title) {
     const ext = (recorderState.mimeType || "").indexOf("mp4") !== -1 ? "mp4" : "webm";
-    return `aura-${day}.${ext}`;
+    return `aura-${slugify(title)}.${ext}`;
   }
 
   async function showInterstitialAd() {

@@ -59,4 +59,19 @@
     { id: "burst", name: "Burst", available: true },
     { id: "liquid", name: "Liquid", available: true },
   ];
+
+  window.AURA_NAMES = [
+    "Afterglow",
+    "Slow Orbit",
+    "Quiet Drift",
+    "Electric Bloom",
+    "Soft Current",
+    "Lunar Flow",
+    "Neon Tide",
+    "Velvet Pulse",
+    "Dawn Spiral",
+    "Silent Bloom",
+    "Ember Wake",
+    "Glass Tide",
+  ];
 })();
