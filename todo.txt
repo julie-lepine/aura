@@ -1,0 +1,78 @@
+Rose pastel : #F4C9D6
+Lavande pastel : #DCC9EF
+
+Parcours
+
+1. Ouverture
+
+écran AURA très épuré
+chargement
+éventuellement transition douce vers la configuration
+
+2. Cookies
+
+consentement classique
+pas de surcharge visuelle
+
+3. « Ton aura » — configuration
+
+Avant de toucher au canvas, l'utilisateur choisit son univers :
+
+🎨 Palette
+✨ Glow
+éventuellement plus tard :
+matière
+intensité
+fond
+ambiance sonore
+
+Puis Créer mon aura.
+
+4. Création
+
+Canvas plein écran.
+
+Aucune UI intrusive.
+
+L'utilisateur explore librement son aura avec ses doigts.
+
+Et là, surtout : ce n'est pas encore l'enregistrement.
+
+5. Barre de contrôle
+
+En bas :
+
+▶︎ Ⅱ ■
+
+Mais je ferais quelque chose de très minimal.
+
+Play → commence l'enregistrement
+Pause → suspend l'enregistrement
+Stop → termine et valide
+
+Une fois Play lancé, on est véritablement en mode capture.
+
+6. Stop
+
+Au clic sur Stop :
+
+→ fin de capture
+→ interstitiel publicitaire
+→ puis écran résultat.
+
+C'est cohérent parce que la pub arrive après la création, au moment où l'utilisateur attend de voir son résultat.
+
+7. Résultat
+
+Une belle preview vidéo, centrée.
+
+Puis :
+
+Télécharger
+
+Et éventuellement plus tard :
+
+Rejouer
+Nouvelle aura
+Modifier mon aura
+Partager

@@ -73,6 +73,7 @@
   let tick = 0;
 
   const glowSprites = PALETTE.map((rgb) => createGlowSprite(rgb[0], rgb[1], rgb[2]));
+  let interactive = false;
 
   // --- Interactions --------------------------------------------------------
 
@@ -701,6 +702,7 @@
   }
 
   function onPointerDown(event) {
+    if (!interactive) return;
     event.preventDefault();
     if (downCount() >= 2) return;
     canvas.setPointerCapture(event.pointerId);
@@ -750,8 +752,10 @@
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    viewW = window.innerWidth;
-    viewH = window.innerHeight;
+    const rawW = window.innerWidth;
+    const rawH = window.innerHeight;
+    viewW = Math.min(rawW, rawH);
+    viewH = Math.max(rawW, rawH);
     canvas.width = Math.floor(viewW * dpr);
     canvas.height = Math.floor(viewH * dpr);
     canvas.style.width = `${viewW}px`;
@@ -777,4 +781,39 @@
 
   lastTime = performance.now();
   requestAnimationFrame(frame);
+
+  function setPalette(colors) {
+    if (!colors || colors.length < 2) return;
+    PALETTE.length = 0;
+    for (let i = 0; i < colors.length; i += 1) PALETTE.push(colors[i]);
+    glowSprites.length = 0;
+    for (let i = 0; i < PALETTE.length; i += 1) {
+      const rgb = PALETTE[i];
+      glowSprites.push(createGlowSprite(rgb[0], rgb[1], rgb[2]));
+    }
+  }
+
+  function resetMatter() {
+    pointers.clear();
+    auraPair.active = false;
+    auraPair.a = null;
+    auraPair.b = null;
+    auraPair.influence = 0;
+    while (particles.length > 0) recycleParticle(0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, viewW, viewH);
+  }
+
+  window.AURA_ENGINE = {
+    setPalette,
+    resetMatter,
+    setInteractive(value) {
+      interactive = !!value;
+    },
+    getCanvas() {
+      return canvas;
+    },
+  };
 })();
