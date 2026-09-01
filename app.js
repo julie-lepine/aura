@@ -5,8 +5,7 @@
 
   // Réglages du feeling — à tweaker en priorité.
   const FEEL = {
-    trailFade: 0.085,
-    glowAlpha: 0.1,
+    glowAlpha: 0.2,
     haloMin: 39,
     haloMax: 88,
     holdRamp: 1.7,
@@ -27,7 +26,34 @@
     flowScale: 0.007,
     flowSpeed: 0.012,
     colorEase: 0.55,
+    align: 0.09,
+    cohesion: 0.014,
   };
+
+  // Couche multi-touch uniquement — n'intervient pas à un doigt.
+  const INTERACT = {
+    radiusPad: 120,
+    attract: 0.02,
+    together: 0.04,
+    particlePull: 0.01,
+    swirl: 0.01,
+    turbBoost: 0.85,
+    colorBleed: 0.06,
+  };
+
+  const auraPair = {
+    active: false,
+    influence: 0,
+    together: 0,
+    oppose: 0,
+    a: null,
+    b: null,
+    mx: 0,
+    my: 0,
+  };
+
+  const BG = "#07070c";
+  const GRID_CELL = 56;
 
   const PALETTE = [
     [198, 186, 218],
@@ -57,6 +83,7 @@
 
   const pool = [];
   const particles = [];
+  const grid = new Map();
   let maxParticles = 96;
 
   function particleBudget() {
@@ -77,10 +104,10 @@
     const cg = Math.round(g * 0.32 + 255 * 0.68);
     const cb = Math.round(b * 0.32 + 255 * 0.68);
     const gradient = gfx.createRadialGradient(mid, mid, 0, mid, mid, mid);
-    gradient.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, 0.2)`);
-    gradient.addColorStop(0.16, `rgba(${r}, ${g}, ${b}, 0.1)`);
-    gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.03)`);
-    gradient.addColorStop(0.68, `rgba(${r}, ${g}, ${b}, 0.008)`);
+    gradient.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, 0.52)`);
+    gradient.addColorStop(0.16, `rgba(${r}, ${g}, ${b}, 0.24)`);
+    gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.07)`);
+    gradient.addColorStop(0.68, `rgba(${r}, ${g}, ${b}, 0.018)`);
     gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
     gfx.fillStyle = gradient;
     gfx.fillRect(0, 0, size, size);
@@ -96,6 +123,21 @@
     return (index + step) % PALETTE.length;
   }
 
+  function smootherstep(edge0, edge1, x) {
+    if (edge0 === edge1) return x >= edge1 ? 1 : 0;
+    let u = (x - edge0) / (edge1 - edge0);
+    u = u < 0 ? 0 : u > 1 ? 1 : u;
+    return u * u * (3 - 2 * u);
+  }
+
+  function downCount() {
+    let n = 0;
+    pointers.forEach((source) => {
+      if (source.down) n += 1;
+    });
+    return n;
+  }
+
   // Champ partagé : deux points proches reçoivent le même flux.
   function flowAt(x, y) {
     const t = tick * FEEL.flowSpeed;
@@ -106,6 +148,72 @@
       x: b * FEEL.turbulence,
       y: -a * FEEL.turbulence,
     };
+  }
+
+  function cellKey(cx, cy) {
+    return ((cx + 4096) << 13) | (cy + 4096);
+  }
+
+  function rebuildGrid() {
+    grid.forEach((bucket) => {
+      bucket.length = 0;
+    });
+    for (let i = 0; i < particles.length; i += 1) {
+      const p = particles[i];
+      const key = cellKey(
+        Math.floor(p.x / GRID_CELL),
+        Math.floor(p.y / GRID_CELL)
+      );
+      let bucket = grid.get(key);
+      if (!bucket) {
+        bucket = [];
+        grid.set(key, bucket);
+      }
+      bucket.push(p);
+    }
+    grid.forEach((bucket, key) => {
+      if (bucket.length === 0) grid.delete(key);
+    });
+  }
+
+  function applyFlock(particle, t) {
+    const cx = Math.floor(particle.x / GRID_CELL);
+    const cy = Math.floor(particle.y / GRID_CELL);
+    let svx = 0;
+    let svy = 0;
+    let sx = 0;
+    let sy = 0;
+    let n = 0;
+    const range = GRID_CELL * GRID_CELL * 2.1;
+
+    for (let ox = -1; ox <= 1; ox += 1) {
+      for (let oy = -1; oy <= 1; oy += 1) {
+        const bucket = grid.get(cellKey(cx + ox, cy + oy));
+        if (!bucket) continue;
+        for (let i = 0; i < bucket.length; i += 1) {
+          const other = bucket[i];
+          if (other === particle) continue;
+          const dx = other.x - particle.x;
+          const dy = other.y - particle.y;
+          if (dx * dx + dy * dy > range) continue;
+          svx += other.vx;
+          svy += other.vy;
+          sx += other.x;
+          sy += other.y;
+          n += 1;
+          if (n >= 8) break;
+        }
+        if (n >= 8) break;
+      }
+      if (n >= 8) break;
+    }
+
+    if (n === 0) return;
+    const inv = 1 / n;
+    particle.vx += (svx * inv - particle.vx) * FEEL.align * t;
+    particle.vy += (svy * inv - particle.vy) * FEEL.align * t;
+    particle.vx += (sx * inv - particle.x) * FEEL.cohesion * t;
+    particle.vy += (sy * inv - particle.y) * FEEL.cohesion * t;
   }
 
   function obtainParticle() {
@@ -161,7 +269,7 @@
 
     const width = currentWidth(source);
     const speed = Math.hypot(source.vx, source.vy);
-    const spread = width * (isHead ? 0.16 : 0.1) * (0.65 + Math.min(speed, 8) * 0.05);
+    const spread = width * (isHead ? 0.2 : 0.22) * (0.7 + Math.min(speed, 8) * 0.03);
     const angle = Math.random() * TAU;
     const radius = Math.sqrt(Math.random()) * spread;
 
@@ -198,10 +306,18 @@
   function depositAt(source, x, y) {
     const speed = Math.hypot(source.vx, source.vy);
     const stretch = Math.min(1.8, 0.85 + speed * 0.12);
+    let px = x - source.vx * stretch;
+    let py = y - source.vy * stretch;
+    if (speed > 0.35) {
+      const inv = 1 / speed;
+      const side = (Math.random() - 0.5) * currentWidth(source) * 0.38;
+      px += -source.vy * inv * side;
+      py += source.vx * inv * side;
+    }
     spawnParticle(
       source,
-      x - source.vx * stretch,
-      y - source.vy * stretch,
+      px,
+      py,
       FEEL.inherit + Math.min(0.22, speed * 0.04),
       false
     );
@@ -253,6 +369,108 @@
     source.colorMix += (source.targetMix - source.colorMix) * ease;
   }
 
+  function stepPair(t) {
+    auraPair.active = false;
+    auraPair.influence = 0;
+    auraPair.a = null;
+    auraPair.b = null;
+
+    const down = [];
+    pointers.forEach((source) => {
+      if (source.down) down.push(source);
+    });
+    if (down.length < 2) return;
+
+    const a = down[0];
+    const b = down[1];
+    const dx = b.matterX - a.matterX;
+    const dy = b.matterY - a.matterY;
+    const dist = Math.hypot(dx, dy);
+    const span = currentWidth(a) + currentWidth(b);
+    const outer = span + INTERACT.radiusPad;
+    const inner = span * 0.42;
+    const influence = smootherstep(outer, inner, dist);
+    if (influence <= 0) return;
+
+    auraPair.active = true;
+    auraPair.a = a;
+    auraPair.b = b;
+    auraPair.influence = influence;
+    auraPair.mx = (a.matterX + b.matterX) * 0.5;
+    auraPair.my = (a.matterY + b.matterY) * 0.5;
+
+    const va = Math.hypot(a.vx, a.vy);
+    const vb = Math.hypot(b.vx, b.vy);
+    let align = 0;
+    if (va > 0.25 && vb > 0.25) {
+      align = (a.vx * b.vx + a.vy * b.vy) / (va * vb);
+    }
+    auraPair.together = Math.max(0, align);
+    auraPair.oppose = Math.max(0, -align);
+
+    const inv = 1 / (dist + 1);
+    const pull = INTERACT.attract * influence;
+    a.matterVx += dx * inv * pull * t;
+    a.matterVy += dy * inv * pull * t;
+    b.matterVx -= dx * inv * pull * t;
+    b.matterVy -= dy * inv * pull * t;
+
+    if (auraPair.together > 0) {
+      const c = INTERACT.together * auraPair.together * influence * t;
+      const avx = (a.vx + b.vx) * 0.5;
+      const avy = (a.vy + b.vy) * 0.5;
+      a.matterVx += (avx - a.matterVx) * c;
+      a.matterVy += (avy - a.matterVy) * c;
+      b.matterVx += (avx - b.matterVx) * c;
+      b.matterVy += (avy - b.matterVy) * c;
+    }
+  }
+
+  function applyPairToParticle(particle, t) {
+    if (!auraPair.active) return;
+    const other =
+      particle.sourceId === auraPair.a.id
+        ? auraPair.b
+        : particle.sourceId === auraPair.b.id
+          ? auraPair.a
+          : null;
+    if (!other) return;
+
+    const ox = other.matterX - particle.x;
+    const oy = other.matterY - particle.y;
+    const reach = currentWidth(other) + 70;
+    const nearOther = Math.exp(-(ox * ox + oy * oy) / (reach * reach));
+    const pull =
+      INTERACT.particlePull *
+      auraPair.influence *
+      (0.4 + auraPair.together * 0.8);
+    particle.vx += ox * pull * nearOther * t;
+    particle.vy += oy * pull * nearOther * t;
+
+    const mx = particle.x - auraPair.mx;
+    const my = particle.y - auraPair.my;
+    const mid = Math.exp(-(mx * mx + my * my) / 8100);
+    const swirl =
+      INTERACT.swirl * auraPair.influence * (0.25 + auraPair.oppose * 1.4);
+    particle.vx += -my * swirl * mid * t;
+    particle.vy += mx * swirl * mid * t;
+
+    if (auraPair.oppose > 0.05) {
+      const f = flowAt(particle.x + 18, particle.y - 18);
+      const boost = INTERACT.turbBoost * auraPair.influence * auraPair.oppose * mid;
+      particle.vx += f.x * boost * t;
+      particle.vy += f.y * boost * t;
+    }
+
+    if (auraPair.influence > 0.2) {
+      particle.toneB = other.toneA;
+      const bleed = auraPair.influence * 0.32;
+      if (bleed > particle.mix) {
+        particle.mix += (bleed - particle.mix) * INTERACT.colorBleed * t;
+      }
+    }
+  }
+
   function stepParticle(particle, t) {
     const source = pointers.get(particle.sourceId);
     const coherence = source ? source.coherence : 0;
@@ -260,6 +478,8 @@
     const flow = flowAt(particle.x, particle.y);
     particle.vx += flow.x * t;
     particle.vy += flow.y * t;
+    applyFlock(particle, t);
+    applyPairToParticle(particle, t);
 
     if (isLiveHead) {
       const target = headTarget(particle, source);
@@ -326,9 +546,14 @@
   }
 
   function stepParticles(t) {
-    for (let i = particles.length - 1; i >= 0; i -= 1) {
+    rebuildGrid();
+    for (let i = 0; i < particles.length; i += 1) {
       stepParticle(particles[i], t);
-      if (particles[i].life <= 0) recycleParticle(i);
+    }
+    for (let i = particles.length - 1; i >= 0; i -= 1) {
+      const particle = particles[i];
+      const contrib = particle.life * particle.life * particle.glow * FEEL.glowAlpha;
+      if (particle.life <= 0 || contrib < 0.009) recycleParticle(i);
     }
   }
 
@@ -336,8 +561,8 @@
 
   function drawHalo(p) {
     const alpha = p.life * p.life * p.glow * FEEL.glowAlpha;
-    if (alpha < 0.01) return;
-    const radius = p.halo * 1.08;
+    if (alpha < 0.012) return;
+    const radius = p.halo * 1.2;
     const d = radius * 2;
     const x = p.x - radius;
     const y = p.y - radius;
@@ -359,9 +584,10 @@
   }
 
   function render() {
+    // Fond opaque chaque frame : le fondu du buffer laissait une empreinte du tracé.
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(7, 7, 12, ${FEEL.trailFade})`;
+    ctx.fillStyle = BG;
     ctx.fillRect(0, 0, viewW, viewH);
 
     if (particles.length === 0) return;
@@ -371,6 +597,7 @@
       drawHalo(particles[i]);
     }
     ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
   }
 
   // --- Boucle --------------------------------------------------------------
@@ -382,6 +609,7 @@
     tick += t;
 
     stepSources(dt, t);
+    stepPair(t);
     stepParticles(t);
     render();
 
@@ -447,7 +675,7 @@
     if (dist > 0.8) {
       const width = currentWidth(source);
       const speedN = Math.min(1, speed / 8);
-      const spacing = Math.max(4.5, width * (0.09 + speedN * 0.26));
+      const spacing = Math.max(width * 0.17, width * (0.19 + speedN * 0.3));
       source.travelAcc += dist;
       const x0 = source.x;
       const y0 = source.y;
@@ -465,6 +693,7 @@
 
   function onPointerDown(event) {
     event.preventDefault();
+    if (downCount() >= 2) return;
     canvas.setPointerCapture(event.pointerId);
 
     const { x, y } = coords(event);
@@ -520,7 +749,7 @@
     canvas.style.height = `${viewH}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingEnabled = true;
-    ctx.fillStyle = "#07070c";
+    ctx.fillStyle = BG;
     ctx.fillRect(0, 0, viewW, viewH);
     maxParticles = particleBudget();
   }
