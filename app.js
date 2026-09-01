@@ -752,10 +752,10 @@
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rawW = window.innerWidth;
-    const rawH = window.innerHeight;
-    viewW = Math.min(rawW, rawH);
-    viewH = Math.max(rawW, rawH);
+    const stage = document.getElementById("stage") || canvas.parentElement;
+    const rect = stage.getBoundingClientRect();
+    viewW = Math.max(1, Math.round(rect.width));
+    viewH = Math.max(1, Math.round(rect.height));
     canvas.width = Math.floor(viewW * dpr);
     canvas.height = Math.floor(viewH * dpr);
     canvas.style.width = `${viewW}px`;

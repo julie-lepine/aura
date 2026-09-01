@@ -2,7 +2,6 @@
   "use strict";
 
   const CONSENT_KEY = "aura-consent";
-  const gateDesktop = document.getElementById("gate-desktop");
   const gateRotate = document.getElementById("gate-rotate");
 
   const appState = {
@@ -28,14 +27,6 @@
     return window.AURA_PALETTES.find((item) => item.id === id) || window.AURA_PALETTES[0];
   }
 
-  function isDesktop() {
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
-    const shortSide = Math.min(window.innerWidth, window.innerHeight);
-    if (coarse) return false;
-    if (navigator.maxTouchPoints > 0 && shortSide < 700) return false;
-    return shortSide >= 600;
-  }
-
   function isPortrait() {
     return window.innerHeight >= window.innerWidth;
   }
@@ -47,14 +38,11 @@
   }
 
   function updateViewportMode() {
-    const desktop = isDesktop();
-    const landscape = !desktop && !isPortrait();
-    document.body.classList.toggle("is-desktop", desktop);
+    const landscape = !isPortrait();
     document.body.classList.toggle("is-landscape", landscape);
-    gateDesktop.hidden = !desktop;
     gateRotate.hidden = !landscape;
 
-    if (desktop || landscape) {
+    if (landscape) {
       if (window.AURA_ENGINE) window.AURA_ENGINE.setInteractive(false);
       return;
     }
@@ -85,7 +73,7 @@
   }
 
   function afterIntro() {
-    if (isDesktop() || !isPortrait()) return;
+    if (!isPortrait()) return;
     const consent = localStorage.getItem(CONSENT_KEY);
     if (consent === "accepted" || consent === "refused") go("configure");
     else go("consent");
