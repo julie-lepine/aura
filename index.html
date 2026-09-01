@@ -19,6 +19,9 @@
 
     <section class="screen is-on" data-screen="intro" id="screen-intro">
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
+      <button type="button" class="btn-primary" id="btn-enter">
+        Créer une aura
+      </button>
     </section>
 
     <section class="screen" data-screen="consent" id="screen-consent">
@@ -42,7 +45,7 @@
     <section class="screen" data-screen="configure" id="screen-configure">
       <div class="configure">
         <h1>Ton aura</h1>
-        <p class="lede">Choisis ton univers</p>
+        <p class="lede">Choisis ton ambiance.</p>
 
         <h2>Palette</h2>
         <div class="choice-row" id="palette-list"></div>
@@ -77,13 +80,38 @@
       <button type="button" class="ctrl" id="btn-stop" hidden aria-label="Stop">
         <img src="assets/aura_stop.svg" alt="" />
       </button>
-      <button type="button" class="ctrl ctrl-main" id="btn-play" aria-label="Play">
-        <img src="assets/aura_play.svg" alt="" />
-      </button>
-      <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="Pause">
-        <img src="assets/aura_pause.svg" alt="" />
-      </button>
+      <div class="ctrl-main-slot">
+        <button type="button" class="ctrl ctrl-main" id="btn-play" aria-label="Play">
+          <img src="assets/aura_play.svg" alt="" />
+        </button>
+        <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="Pause">
+          <img src="assets/aura_pause.svg" alt="" />
+        </button>
+      </div>
     </div>
+    <button type="button" class="ctrl ctrl-back" id="btn-back-config" hidden aria-label="Retour à la personnalisation">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="auraBackGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#F4C9D6" />
+            <stop offset="100%" stop-color="#DCC9EF" />
+          </linearGradient>
+        </defs>
+        <path
+          fill="none"
+          stroke="url(#auraBackGrad)"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M14.5 5.5 L7.5 12 L14.5 18.5"
+        />
+      </svg>
+    </button>
+    </div>
+
+    <div id="gate-desktop" class="gate" hidden>
+      <img class="logo" src="assets/aura_logo.svg" alt="aura" />
+      <p>AURA est une expérience conçue pour ton téléphone.</p>
     </div>
 
     <div id="gate-rotate" class="gate" hidden>

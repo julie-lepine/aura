@@ -2,6 +2,7 @@
   "use strict";
 
   const CONSENT_KEY = "aura-consent";
+  const gateDesktop = document.getElementById("gate-desktop");
   const gateRotate = document.getElementById("gate-rotate");
 
   const appState = {
@@ -17,6 +18,7 @@
 
   const screens = document.querySelectorAll("[data-screen]");
   const createBar = document.getElementById("create-controls");
+  const btnBackConfig = document.getElementById("btn-back-config");
   const btnPlay = document.getElementById("btn-play");
   const btnPause = document.getElementById("btn-pause");
   const btnStop = document.getElementById("btn-stop");
@@ -25,6 +27,14 @@
 
   function paletteById(id) {
     return window.AURA_PALETTES.find((item) => item.id === id) || window.AURA_PALETTES[0];
+  }
+
+  function isDesktop() {
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const shortSide = Math.min(window.innerWidth, window.innerHeight);
+    if (coarse) return false;
+    if (navigator.maxTouchPoints > 0 && shortSide < 700) return false;
+    return shortSide >= 600;
   }
 
   function isPortrait() {
@@ -38,11 +48,14 @@
   }
 
   function updateViewportMode() {
-    const landscape = !isPortrait();
+    const desktop = isDesktop();
+    const landscape = !desktop && !isPortrait();
+    document.body.classList.toggle("is-desktop", desktop);
     document.body.classList.toggle("is-landscape", landscape);
+    gateDesktop.hidden = !desktop;
     gateRotate.hidden = !landscape;
 
-    if (landscape) {
+    if (desktop || landscape) {
       if (window.AURA_ENGINE) window.AURA_ENGINE.setInteractive(false);
       return;
     }
@@ -61,6 +74,7 @@
     const creating = screen === "create";
     document.body.classList.toggle("is-create", creating);
     createBar.hidden = !creating;
+    btnBackConfig.hidden = !creating;
     if (window.AURA_ENGINE) window.AURA_ENGINE.setInteractive(creating);
     if (creating) syncRecordButtons();
     updateViewportMode();
@@ -69,11 +83,12 @@
   function applyConfigToEngine() {
     const palette = paletteById(appState.auraConfig.palette);
     window.AURA_ENGINE.setPalette(palette.colors);
+    window.AURA_ENGINE.setGlow(appState.auraConfig.glow);
     window.AURA_ENGINE.resetMatter();
   }
 
   function afterIntro() {
-    if (!isPortrait()) return;
+    if (isDesktop() || !isPortrait()) return;
     const consent = localStorage.getItem(CONSENT_KEY);
     if (consent === "accepted" || consent === "refused") go("configure");
     else go("consent");
@@ -129,6 +144,7 @@
 
   function renderGlowCards() {
     const root = document.getElementById("glow-list");
+    root.className = "glow-grid";
     root.innerHTML = "";
     window.AURA_GLOWS.forEach((glow) => {
       const btn = document.createElement("button");
@@ -138,7 +154,18 @@
       btn.disabled = !glow.available;
       if (glow.id === appState.auraConfig.glow) btn.classList.add("is-selected");
       const preview = document.createElement("span");
-      preview.className = "glow-preview";
+      preview.className = `glow-preview glow-preview--${glow.id}`;
+      const core = document.createElement("span");
+      core.className = "core";
+      preview.appendChild(core);
+      let extra = 0;
+      if (glow.id === "spark") extra = 6;
+      else if (glow.id === "ember" || glow.id === "burst") extra = 5;
+      for (let i = 0; i < extra; i += 1) {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        preview.appendChild(dot);
+      }
       const label = document.createElement("span");
       label.className = "choice-label";
       label.textContent = glow.name;
@@ -171,7 +198,10 @@
     go("result");
   }
 
-  document.getElementById("screen-intro").addEventListener("click", afterIntro);
+  document.getElementById("btn-enter").addEventListener("click", (event) => {
+    event.stopPropagation();
+    afterIntro();
+  });
 
   document.getElementById("btn-accept").addEventListener("click", () => {
     localStorage.setItem(CONSENT_KEY, "accepted");
@@ -184,6 +214,14 @@
   });
 
   document.getElementById("btn-create").addEventListener("click", enterCreate);
+
+  btnBackConfig.addEventListener("click", (event) => {
+    event.stopPropagation();
+    window.AURA_RECORD.cleanup();
+    window.AURA_ENGINE.resetMatter();
+    window.AURA_ENGINE.setInteractive(false);
+    go("configure");
+  });
 
   btnPlay.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -207,6 +245,7 @@
     event.stopPropagation();
     window.AURA_ENGINE.setInteractive(false);
     createBar.hidden = true;
+    btnBackConfig.hidden = true;
     go("processing");
     try {
       await window.AURA_RECORD.stop();
@@ -236,7 +275,4 @@
     tryLockPortrait();
     updateViewportMode();
   });
-  window.setTimeout(() => {
-    if (appState.screen === "intro") afterIntro();
-  }, 2400);
 })();

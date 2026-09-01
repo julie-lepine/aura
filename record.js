@@ -85,23 +85,28 @@
     }
     try {
       recorderState.recorder.pause();
-      recorderState.status = "paused";
     } catch (err) {
-      recorderState.status = "recording";
+      /* native pause may be unavailable */
     }
+    recorderState.status =
+      recorderState.recorder.state === "paused" ? "paused" : "recording";
     return recorderState;
   }
 
   function resume() {
-    if (!recorderState.recorder || recorderState.recorder.state !== "paused") {
+    if (!recorderState.recorder) return recorderState;
+    if (recorderState.recorder.state === "recording") {
+      recorderState.status = "recording";
       return recorderState;
     }
+    if (recorderState.recorder.state !== "paused") return recorderState;
     try {
       recorderState.recorder.resume();
-      recorderState.status = "recording";
     } catch (err) {
-      recorderState.status = recorderState.recorder.state || "recording";
+      /* keep status from native state */
     }
+    recorderState.status =
+      recorderState.recorder.state === "recording" ? "recording" : "paused";
     return recorderState;
   }
 

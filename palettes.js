@@ -53,10 +53,10 @@
   ];
 
   window.AURA_GLOWS = [
-    {
-      id: "soft",
-      name: "Soft",
-      available: true,
-    },
+    { id: "soft", name: "Soft", available: true },
+    { id: "spark", name: "Spark", available: true },
+    { id: "ember", name: "Ember", available: true },
+    { id: "burst", name: "Burst", available: true },
+    { id: "liquid", name: "Liquid", available: true },
   ];
 })();

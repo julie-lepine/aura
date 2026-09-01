@@ -41,16 +41,7 @@
     colorBleed: 0.12,
   };
 
-  const auraPair = {
-    active: false,
-    influence: 0,
-    together: 0,
-    oppose: 0,
-    a: null,
-    b: null,
-    mx: 0,
-    my: 0,
-  };
+  const downCache = [];
 
   const BG = "#07070c";
   const GRID_CELL = 56;
@@ -74,6 +65,8 @@
 
   const glowSprites = PALETTE.map((rgb) => createGlowSprite(rgb[0], rgb[1], rgb[2]));
   let interactive = false;
+  let activeGlow = "soft";
+  const FLECK_CAP = 48;
 
   // --- Interactions --------------------------------------------------------
 
@@ -131,14 +124,6 @@
     return u * u * (3 - 2 * u);
   }
 
-  function downCount() {
-    let n = 0;
-    pointers.forEach((source) => {
-      if (source.down) n += 1;
-    });
-    return n;
-  }
-
   // Champ partagé : deux points proches reçoivent le même flux.
   function flowAt(x, y) {
     const t = tick * FEEL.flowSpeed;
@@ -178,6 +163,7 @@
   }
 
   function applyFlock(particle, t) {
+    if (particle.role !== "matter") return;
     const cx = Math.floor(particle.x / GRID_CELL);
     const cy = Math.floor(particle.y / GRID_CELL);
     let svx = 0;
@@ -193,7 +179,7 @@
         if (!bucket) continue;
         for (let i = 0; i < bucket.length; i += 1) {
           const other = bucket[i];
-          if (other === particle) continue;
+          if (other === particle || other.role !== "matter") continue;
           const dx = other.x - particle.x;
           const dy = other.y - particle.y;
           if (dx * dx + dy * dy > range) continue;
@@ -211,10 +197,12 @@
 
     if (n === 0) return;
     const inv = 1 / n;
-    particle.vx += (svx * inv - particle.vx) * FEEL.align * t;
-    particle.vy += (svy * inv - particle.vy) * FEEL.align * t;
-    particle.vx += (sx * inv - particle.x) * FEEL.cohesion * t;
-    particle.vy += (sy * inv - particle.y) * FEEL.cohesion * t;
+    const align = activeGlow === "liquid" ? FEEL.align * 1.2 : FEEL.align;
+    const coh = activeGlow === "liquid" ? FEEL.cohesion * 1.9 : FEEL.cohesion;
+    particle.vx += (svx * inv - particle.vx) * align * t;
+    particle.vy += (svy * inv - particle.vy) * align * t;
+    particle.vx += (sx * inv - particle.x) * coh * t;
+    particle.vy += (sy * inv - particle.y) * coh * t;
   }
 
   function obtainParticle() {
@@ -239,6 +227,8 @@
       toneB: 1,
       mix: 0,
       sourceId: 0,
+      role: "matter",
+      twinkle: 0,
     };
   }
 
@@ -260,6 +250,27 @@
       }
     }
     if (idx >= 0) recycleParticle(idx);
+  }
+
+  function recycleOldestFleck() {
+    let idx = -1;
+    let minLife = 2;
+    for (let i = 0; i < particles.length; i += 1) {
+      const p = particles[i];
+      if (p.role !== "matter" && p.life < minLife) {
+        minLife = p.life;
+        idx = i;
+      }
+    }
+    if (idx >= 0) recycleParticle(idx);
+  }
+
+  function fleckCount() {
+    let n = 0;
+    for (let i = 0; i < particles.length; i += 1) {
+      if (particles[i].role !== "matter") n += 1;
+    }
+    return n;
   }
 
   function spawnParticle(source, x, y, inherit, isHead) {
@@ -286,7 +297,9 @@
     particle.spreadMul = 0.25 + Math.random() * 0.85;
     particle.angle = angle;
     particle.life = 1;
-    particle.decay = FEEL.dissipate + Math.random() * 0.14;
+    particle.decay =
+      (FEEL.dissipate + Math.random() * 0.14) *
+      (activeGlow === "liquid" ? 0.72 : 1);
     particle.lag = 0.4 + Math.random() * 0.9;
     particle.glow = 0.62 + Math.random() * 0.4;
     particle.phase = Math.random() * TAU;
@@ -295,6 +308,8 @@
     particle.toneB = source.toneB;
     particle.mix = source.colorMix;
     particle.sourceId = source.id;
+    particle.role = "matter";
+    particle.twinkle = 0;
     particles.push(particle);
   }
 
@@ -306,22 +321,136 @@
 
   function depositAt(source, x, y) {
     const speed = Math.hypot(source.vx, source.vy);
-    const stretch = Math.min(1.8, 0.85 + speed * 0.12);
+    let stretch = Math.min(1.8, 0.85 + speed * 0.12);
+    if (activeGlow === "liquid") stretch = Math.min(2.2, stretch * 1.28);
     let px = x - source.vx * stretch;
     let py = y - source.vy * stretch;
     if (speed > 0.35) {
       const inv = 1 / speed;
-      const side = (Math.random() - 0.5) * currentWidth(source) * 0.38;
+      const side = (Math.random() - 0.5) * currentWidth(source) * (activeGlow === "liquid" ? 0.14 : 0.38);
       px += -source.vy * inv * side;
       py += source.vx * inv * side;
     }
-    spawnParticle(
-      source,
-      px,
-      py,
-      FEEL.inherit + Math.min(0.22, speed * 0.04),
-      false
-    );
+    let inherit = FEEL.inherit + Math.min(0.22, speed * 0.04);
+    if (activeGlow === "liquid") inherit = Math.min(0.84, inherit * 1.12);
+    spawnParticle(source, px, py, inherit, false);
+    maybeEmitFlecks(source, px, py, speed);
+  }
+
+  function spawnFleck(source, x, y, role, vx, vy) {
+    if (activeGlow === "soft" || activeGlow === "liquid") return;
+    if (fleckCount() >= FLECK_CAP) recycleOldestFleck();
+    if (particles.length >= maxParticles) recycleOldestFleck();
+    if (particles.length >= maxParticles) return;
+
+    const particle = obtainParticle();
+    particle.x = x;
+    particle.y = y;
+    particle.vx = vx;
+    particle.vy = vy;
+    particle.ox = 0;
+    particle.oy = 0;
+    particle.haloMul = 1;
+    particle.halo =
+      role === "spark"
+        ? 10 + Math.random() * 12
+        : role === "ember"
+          ? 12 + Math.random() * 14
+          : 9 + Math.random() * 11;
+    particle.spreadMul = 1;
+    particle.angle = Math.random() * TAU;
+    particle.life = 1;
+    particle.decay =
+      role === "burst"
+        ? 0.52 + Math.random() * 0.22
+        : role === "ember"
+          ? 0.28 + Math.random() * 0.14
+          : 0.34 + Math.random() * 0.16;
+    particle.lag = 1;
+    particle.glow = 0.82 + Math.random() * 0.28;
+    particle.phase = Math.random() * TAU;
+    particle.head = false;
+    particle.toneA = source.toneA;
+    particle.toneB = source.toneB;
+    particle.mix = source.colorMix;
+    particle.sourceId = source.id;
+    particle.role = role;
+    particle.twinkle = Math.random() * TAU;
+    particles.push(particle);
+  }
+
+  function maybeEmitFlecks(source, x, y, speed) {
+    if (activeGlow === "spark") {
+      const n = Math.random() < 0.55 ? 2 : 1;
+      for (let i = 0; i < n; i += 1) {
+        spawnFleck(
+          source,
+          x + (Math.random() - 0.5) * 22,
+          y + (Math.random() - 0.5) * 22,
+          "spark",
+          source.vx * 0.55 + (Math.random() - 0.5) * 2.4,
+          source.vy * 0.55 + (Math.random() - 0.5) * 2.4
+        );
+      }
+    }
+    if (activeGlow === "ember") {
+      const n = speed > 3 ? 2 : 1;
+      for (let i = 0; i < n; i += 1) {
+        spawnFleck(
+          source,
+          x + (Math.random() - 0.5) * 16,
+          y + (Math.random() - 0.5) * 16,
+          "ember",
+          source.vx * 0.18 + (Math.random() - 0.5) * 0.9,
+          source.vy * 0.12 - 0.9 - Math.random() * 1.1
+        );
+      }
+    }
+    if (activeGlow === "burst" && speed > 1.6 && Math.random() < 0.42) {
+      emitBurst(source, x, y, speed);
+    }
+  }
+
+  function maybeShedFlecks(source) {
+    if (activeGlow === "spark" && Math.random() < 0.1) {
+      spawnFleck(
+        source,
+        source.matterX + (Math.random() - 0.5) * 28,
+        source.matterY + (Math.random() - 0.5) * 28,
+        "spark",
+        source.vx * 0.25 + (Math.random() - 0.5) * 1.6,
+        source.vy * 0.25 + (Math.random() - 0.5) * 1.6
+      );
+    }
+    if (activeGlow === "ember" && Math.random() < 0.16) {
+      spawnFleck(
+        source,
+        source.matterX + (Math.random() - 0.5) * 18,
+        source.matterY + (Math.random() - 0.5) * 14,
+        "ember",
+        (Math.random() - 0.5) * 0.5,
+        -0.7 - Math.random() * 1.3
+      );
+    }
+  }
+
+  function emitBurst(source, x, y, speed) {
+    if (activeGlow !== "burst") return;
+    const heading = Math.atan2(source.vy, source.vx);
+    const count = speed > 3.2 ? 7 : 5;
+    for (let i = 0; i < count; i += 1) {
+      const side = i % 2 === 0 ? 1 : -1;
+      const ang = heading + side * (0.45 + Math.random() * 1.05) + (Math.random() - 0.5) * 0.35;
+      const mag = 2.2 + speed * 0.42 + Math.random() * 2.1;
+      spawnFleck(
+        source,
+        x + (Math.random() - 0.5) * 6,
+        y + (Math.random() - 0.5) * 6,
+        "burst",
+        Math.cos(ang) * mag,
+        Math.sin(ang) * mag
+      );
+    }
   }
 
   // --- Simulation ----------------------------------------------------------
@@ -338,7 +467,10 @@
       const nx = source.vx * inv;
       const ny = source.vy * inv;
       const along = ox * nx + oy * ny;
-      const stretch = Math.min(3.2, 1 + speed * FEEL.stretch);
+      const stretch = Math.min(
+        3.2,
+        1 + speed * FEEL.stretch * (activeGlow === "liquid" ? 1.42 : 1)
+      );
       const compress = 1 / Math.sqrt(stretch);
       ox = along * nx * stretch + (ox - along * nx) * compress;
       oy = along * ny * stretch + (oy - along * ny) * compress;
@@ -370,122 +502,160 @@
     source.colorMix += (source.targetMix - source.colorMix) * ease;
   }
 
-  function stepPair(t) {
-    auraPair.active = false;
-    auraPair.influence = 0;
-    auraPair.a = null;
-    auraPair.b = null;
-
-    const down = [];
+  function collectDown() {
+    downCache.length = 0;
     pointers.forEach((source) => {
-      if (source.down) down.push(source);
+      if (source.down) downCache.push(source);
     });
-    if (down.length < 2) return;
+  }
 
-    const a = down[0];
-    const b = down[1];
+  function pairMetrics(a, b) {
     const dx = b.matterX - a.matterX;
     const dy = b.matterY - a.matterY;
     const dist = Math.hypot(dx, dy);
     const span = currentWidth(a) + currentWidth(b);
-    const outer = span + INTERACT.radiusPad;
-    const inner = span * 0.42;
-    const influence = smootherstep(outer, inner, dist);
-    if (influence <= 0) return;
-
-    auraPair.active = true;
-    auraPair.a = a;
-    auraPair.b = b;
-    auraPair.influence = influence;
-    auraPair.mx = (a.matterX + b.matterX) * 0.5;
-    auraPair.my = (a.matterY + b.matterY) * 0.5;
-
+    const influence = smootherstep(span + INTERACT.radiusPad, span * 0.42, dist);
     const va = Math.hypot(a.vx, a.vy);
     const vb = Math.hypot(b.vx, b.vy);
     let align = 0;
     if (va > 0.25 && vb > 0.25) {
       align = (a.vx * b.vx + a.vy * b.vy) / (va * vb);
     }
-    auraPair.together = Math.max(0, align);
-    auraPair.oppose = Math.max(0, -align);
+    return {
+      dx,
+      dy,
+      dist,
+      influence,
+      together: Math.max(0, align),
+      oppose: Math.max(0, -align),
+    };
+  }
 
-    const inv = 1 / (dist + 1);
-    const pull = INTERACT.attract * influence;
-    a.matterVx += dx * inv * pull * t;
-    a.matterVy += dy * inv * pull * t;
-    b.matterVx -= dx * inv * pull * t;
-    b.matterVy -= dy * inv * pull * t;
+  function stepInteract(t) {
+    collectDown();
+    if (downCache.length < 2) return;
 
-    if (auraPair.together > 0) {
-      const c = INTERACT.together * auraPair.together * influence * t;
-      const avx = (a.vx + b.vx) * 0.5;
-      const avy = (a.vy + b.vy) * 0.5;
-      a.matterVx += (avx - a.matterVx) * c;
-      a.matterVy += (avy - a.matterVy) * c;
-      b.matterVx += (avx - b.matterVx) * c;
-      b.matterVy += (avy - b.matterVy) * c;
+    for (let i = 0; i < downCache.length; i += 1) {
+      const a = downCache[i];
+      for (let j = i + 1; j < downCache.length; j += 1) {
+        const b = downCache[j];
+        const m = pairMetrics(a, b);
+        if (m.influence <= 0) continue;
+
+        const inv = 1 / (m.dist + 1);
+        const pull = INTERACT.attract * m.influence;
+        a.matterVx += m.dx * inv * pull * t;
+        a.matterVy += m.dy * inv * pull * t;
+        b.matterVx -= m.dx * inv * pull * t;
+        b.matterVy -= m.dy * inv * pull * t;
+
+        if (m.together > 0) {
+          const c = INTERACT.together * m.together * m.influence * t;
+          const avx = (a.vx + b.vx) * 0.5;
+          const avy = (a.vy + b.vy) * 0.5;
+          a.matterVx += (avx - a.matterVx) * c;
+          a.matterVy += (avy - a.matterVy) * c;
+          b.matterVx += (avx - b.matterVx) * c;
+          b.matterVy += (avy - b.matterVy) * c;
+        }
+      }
     }
   }
 
   function applyPairToParticle(particle, t) {
-    if (!auraPair.active) return;
-    const other =
-      particle.sourceId === auraPair.a.id
-        ? auraPair.b
-        : particle.sourceId === auraPair.b.id
-          ? auraPair.a
-          : null;
-    if (!other) return;
+    if (downCache.length < 2) return;
+    const self = pointers.get(particle.sourceId);
+    if (!self || !self.down) return;
 
-    const ox = other.matterX - particle.x;
-    const oy = other.matterY - particle.y;
-    const reach = currentWidth(other) + 70;
-    const nearOther = Math.exp(-(ox * ox + oy * oy) / (reach * reach));
-    const pull =
-      INTERACT.particlePull *
-      auraPair.influence *
-      (0.4 + auraPair.together * 0.8);
-    particle.vx += ox * pull * nearOther * t;
-    particle.vy += oy * pull * nearOther * t;
+    for (let i = 0; i < downCache.length; i += 1) {
+      const other = downCache[i];
+      if (other.id === self.id) continue;
+      const m = pairMetrics(self, other);
+      if (m.influence <= 0) continue;
 
-    const mx = particle.x - auraPair.mx;
-    const my = particle.y - auraPair.my;
-    const mid = Math.exp(-(mx * mx + my * my) / 8100);
-    const swirl =
-      INTERACT.swirl * auraPair.influence * (0.25 + auraPair.oppose * 1.4);
-    particle.vx += -my * swirl * mid * t;
-    particle.vy += mx * swirl * mid * t;
+      const ox = other.matterX - particle.x;
+      const oy = other.matterY - particle.y;
+      const reach = currentWidth(other) + 70;
+      const nearOther = Math.exp(-(ox * ox + oy * oy) / (reach * reach));
+      const pull =
+        INTERACT.particlePull * m.influence * (0.4 + m.together * 0.8);
+      particle.vx += ox * pull * nearOther * t;
+      particle.vy += oy * pull * nearOther * t;
 
-    if (auraPair.oppose > 0.05) {
-      const f = flowAt(particle.x + 18, particle.y - 18);
-      const boost = INTERACT.turbBoost * auraPair.influence * auraPair.oppose * mid;
-      particle.vx += f.x * boost * t;
-      particle.vy += f.y * boost * t;
+      const mx = particle.x - (self.matterX + other.matterX) * 0.5;
+      const my = particle.y - (self.matterY + other.matterY) * 0.5;
+      const mid = Math.exp(-(mx * mx + my * my) / 8100);
+      const swirl = INTERACT.swirl * m.influence * (0.25 + m.oppose * 1.4);
+      particle.vx += -my * swirl * mid * t;
+      particle.vy += mx * swirl * mid * t;
+
+      if (m.oppose > 0.05) {
+        const f = flowAt(particle.x + 18, particle.y - 18);
+        const boost = INTERACT.turbBoost * m.influence * m.oppose * mid;
+        particle.vx += f.x * boost * t;
+        particle.vy += f.y * boost * t;
+      }
     }
   }
 
   function applyPairColor(particle, t) {
-    if (!auraPair.active) return;
-    const other =
-      particle.sourceId === auraPair.a.id
-        ? auraPair.b
-        : particle.sourceId === auraPair.b.id
-          ? auraPair.a
-          : null;
-    if (!other) return;
+    if (downCache.length < 2) return;
+    const self = pointers.get(particle.sourceId);
+    if (!self || !self.down) return;
 
-    particle.toneB = other.toneA;
-    const target = auraPair.influence * 0.5;
+    let best = null;
+    let bestInf = 0;
+    for (let i = 0; i < downCache.length; i += 1) {
+      const other = downCache[i];
+      if (other.id === self.id) continue;
+      const m = pairMetrics(self, other);
+      if (m.influence > bestInf) {
+        bestInf = m.influence;
+        best = other;
+      }
+    }
+    if (!best) return;
+
+    particle.toneB = best.toneA;
+    const target = bestInf * 0.5;
     particle.mix += (target - particle.mix) * INTERACT.colorBleed * t;
   }
 
+  function stepFleck(particle, t) {
+    const flow = flowAt(particle.x, particle.y);
+    particle.vx += flow.x * 0.55 * t;
+    particle.vy += flow.y * 0.55 * t;
+
+    if (particle.role === "ember") {
+      particle.vy -= 0.32 * t;
+      particle.halo += 4.5 * (t / 60);
+    }
+    if (particle.role === "spark") {
+      particle.glow =
+        0.4 + 0.7 * (0.5 + 0.5 * Math.sin(tick * 0.28 + particle.twinkle));
+    }
+
+    const drag = particle.role === "burst" ? 0.978 : 0.962;
+    const keep = Math.pow(drag, t);
+    particle.vx *= keep;
+    particle.vy *= keep;
+    particle.x += particle.vx * t;
+    particle.y += particle.vy * t;
+    particle.life -= particle.decay * (t / 60);
+  }
+
   function stepParticle(particle, t) {
+    if (particle.role !== "matter") {
+      stepFleck(particle, t);
+      return;
+    }
     const source = pointers.get(particle.sourceId);
     const coherence = source ? source.coherence : 0;
     const isLiveHead = particle.head && source && source.down;
     const flow = flowAt(particle.x, particle.y);
-    particle.vx += flow.x * t;
-    particle.vy += flow.y * t;
+    const flowMul = activeGlow === "liquid" ? 0.38 : 1;
+    particle.vx += flow.x * flowMul * t;
+    particle.vy += flow.y * flowMul * t;
     applyFlock(particle, t);
     applyPairToParticle(particle, t);
 
@@ -496,6 +666,10 @@
       particle.vx += (source.vx - particle.vx) * 0.08 * t;
       particle.vy += (source.vy - particle.vy) * 0.08 * t;
       particle.halo = currentWidth(source) * particle.haloMul;
+      if (activeGlow === "liquid") {
+        const spd = Math.hypot(source.vx, source.vy);
+        particle.halo *= spd < FEEL.stillSpeed ? 1.08 : 0.84;
+      }
       particle.mix += (source.colorMix - particle.mix) * 0.08;
     } else if (source && source.down) {
       const width = currentWidth(source);
@@ -507,6 +681,11 @@
     }
 
     applyPairColor(particle, t);
+
+    if (activeGlow === "liquid" && !isLiveHead) {
+      particle.vy += 0.07 * t;
+      particle.vx += Math.sin(tick * 0.1 + particle.phase) * 0.07 * t;
+    }
 
     const drag = isLiveHead
       ? FEEL.dragHead
@@ -524,7 +703,12 @@
       return;
     }
 
-    const decay = source && source.down ? 0.045 : particle.decay;
+    const decay =
+      source && source.down
+        ? activeGlow === "liquid"
+          ? 0.03
+          : 0.045
+        : particle.decay;
     particle.life -= decay * (t / 60);
   }
 
@@ -547,6 +731,7 @@
         if (speed < FEEL.stillSpeed) {
           source.pressure += (1 - source.pressure) * (1 - Math.exp(-dt / FEEL.holdRamp));
         }
+        maybeShedFlecks(source);
         return;
       }
 
@@ -562,35 +747,142 @@
     }
     for (let i = particles.length - 1; i >= 0; i -= 1) {
       const particle = particles[i];
-      const contrib = particle.life * particle.life * particle.glow * FEEL.glowAlpha;
-      if (particle.life <= 0 || contrib < 0.009) recycleParticle(i);
+    const contrib =
+      particle.role === "matter"
+        ? particle.life * particle.life * particle.glow * FEEL.glowAlpha
+        : particle.life * particle.glow * 0.04;
+    if (particle.life <= 0 || contrib < 0.009) recycleParticle(i);
     }
   }
 
   // --- Rendu ---------------------------------------------------------------
 
-  function drawHalo(p) {
-    const alpha = p.life * p.life * p.glow * FEEL.glowAlpha;
+  function drawMatterSprite(p, x, y, w, h, alpha) {
     if (alpha < 0.012) return;
-    const radius = p.halo * 1.2;
-    const d = radius * 2;
-    const x = p.x - radius;
-    const y = p.y - radius;
     const mix = p.mix;
     if (mix < 0.03) {
       ctx.globalAlpha = alpha;
-      ctx.drawImage(glowSprites[p.toneA], x, y, d, d);
+      ctx.drawImage(glowSprites[p.toneA], x, y, w, h);
       return;
     }
     if (mix > 0.94) {
       ctx.globalAlpha = alpha;
-      ctx.drawImage(glowSprites[p.toneB], x, y, d, d);
+      ctx.drawImage(glowSprites[p.toneB], x, y, w, h);
       return;
     }
     ctx.globalAlpha = alpha * (1 - mix);
-    ctx.drawImage(glowSprites[p.toneA], x, y, d, d);
+    ctx.drawImage(glowSprites[p.toneA], x, y, w, h);
     ctx.globalAlpha = alpha * mix;
-    ctx.drawImage(glowSprites[p.toneB], x, y, d, d);
+    ctx.drawImage(glowSprites[p.toneB], x, y, w, h);
+  }
+
+  function drawFleck(p) {
+    const twinkle =
+      p.role === "spark"
+        ? p.glow
+        : 0.72 + 0.28 * (0.5 + 0.5 * Math.sin(tick * 0.14 + p.twinkle));
+    const gain = p.role === "spark" ? 0.95 : p.role === "burst" ? 0.82 : 0.7;
+    const alpha = p.life * twinkle * gain;
+    if (alpha < 0.04) return;
+    const sprite = glowSprites[p.toneA];
+
+    if (p.role === "spark") {
+      const r = p.halo;
+      ctx.globalAlpha = alpha * 0.75;
+      ctx.drawImage(sprite, p.x - r, p.y - r, r * 2, r * 2);
+      const core = r * 0.34;
+      ctx.globalAlpha = Math.min(1, alpha * 1.4);
+      ctx.drawImage(sprite, p.x - core, p.y - core, core * 2, core * 2);
+      return;
+    }
+
+    if (p.role === "ember") {
+      const rw = p.halo * 0.78;
+      const rh = p.halo * 1.55;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(sprite, p.x - rw, p.y - rh, rw * 2, rh * 2);
+      const coreW = p.halo * 0.28;
+      const coreH = p.halo * 0.42;
+      ctx.globalAlpha = Math.min(1, alpha * 1.25);
+      ctx.drawImage(sprite, p.x - coreW, p.y - coreH, coreW * 2, coreH * 2);
+      return;
+    }
+
+    const spd = Math.hypot(p.vx, p.vy);
+    const r = p.halo;
+    if (spd > 0.35) {
+      const nx = p.vx / spd;
+      const ny = p.vy / spd;
+      const tail = r * (1.6 + Math.min(2.4, spd * 0.28));
+      ctx.globalAlpha = alpha * 0.55;
+      ctx.drawImage(
+        sprite,
+        p.x - nx * tail - r * 0.85,
+        p.y - ny * tail - r * 0.85,
+        r * 1.7,
+        r * 1.7
+      );
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(sprite, p.x - r * 0.55, p.y - r * 0.55, r * 1.1, r * 1.1);
+      return;
+    }
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(sprite, p.x - r, p.y - r, r * 2, r * 2);
+  }
+
+  function drawHalo(p) {
+    if (p.role !== "matter") {
+      drawFleck(p);
+      return;
+    }
+
+    const alpha = p.life * p.life * p.glow * FEEL.glowAlpha;
+    if (alpha < 0.012) return;
+
+    if (activeGlow !== "liquid") {
+      const radius = p.halo * 1.2;
+      const d = radius * 2;
+      drawMatterSprite(p, p.x - radius, p.y - radius, d, d, alpha);
+      return;
+    }
+
+    const spd = Math.hypot(p.vx, p.vy);
+    const radius = p.halo * (spd < 1.1 ? 1.3 : 1.16);
+    drawMatterSprite(p, p.x - radius, p.y - radius, radius * 2, radius * 2, alpha);
+
+    const shine = radius * (p.head ? 0.36 : 0.26);
+    drawMatterSprite(
+      p,
+      p.x - shine * 0.7,
+      p.y - shine * 1.05,
+      shine * 2,
+      shine * 2,
+      Math.min(0.55, alpha * 1.35)
+    );
+
+    if (spd < 0.7 || p.life < 0.42) return;
+    const inv = 1 / spd;
+    const nx = p.vx * inv;
+    const ny = p.vy * inv;
+    const step = Math.min(15, 6 + spd * 1.3);
+    const r1 = radius * 0.76;
+    drawMatterSprite(
+      p,
+      p.x - nx * step - r1,
+      p.y - ny * step - r1,
+      r1 * 2,
+      r1 * 2,
+      alpha * 0.5
+    );
+    const r2 = radius * 0.52;
+    drawMatterSprite(
+      p,
+      p.x - nx * step * 1.85 - r2,
+      p.y - ny * step * 1.85 - r2,
+      r2 * 2,
+      r2 * 2,
+      alpha * 0.28
+    );
   }
 
   function render() {
@@ -619,7 +911,7 @@
     tick += t;
 
     stepSources(dt, t);
-    stepPair(t);
+    stepInteract(t);
     stepParticles(t);
     render();
 
@@ -678,6 +970,7 @@
         (source.vx * prevVx + source.vy * prevVy) / (speed * prevSpeed);
       if (cos < 0.55) {
         source.targetMix = Math.min(0.42, source.targetMix + (0.55 - cos) * 0.16);
+        emitBurst(source, source.x, source.y, speed);
       }
     }
 
@@ -685,7 +978,8 @@
     if (dist > 0.8) {
       const width = currentWidth(source);
       const speedN = Math.min(1, speed / 8);
-      const spacing = Math.max(width * 0.17, width * (0.19 + speedN * 0.3));
+      let spacing = Math.max(width * 0.17, width * (0.19 + speedN * 0.3));
+      if (activeGlow === "liquid") spacing *= 0.64;
       source.travelAcc += dist;
       const x0 = source.x;
       const y0 = source.y;
@@ -704,7 +998,6 @@
   function onPointerDown(event) {
     if (!interactive) return;
     event.preventDefault();
-    if (downCount() >= 2) return;
     canvas.setPointerCapture(event.pointerId);
 
     const { x, y } = coords(event);
@@ -740,6 +1033,7 @@
     if (!source) return;
     event.preventDefault();
     source.down = false;
+    if (activeGlow === "burst") emitBurst(source, source.x, source.y, Math.hypot(source.vx, source.vy));
     for (let i = 0; i < particles.length; i += 1) {
       if (particles[i].sourceId === source.id) particles[i].head = false;
     }
@@ -795,10 +1089,7 @@
 
   function resetMatter() {
     pointers.clear();
-    auraPair.active = false;
-    auraPair.a = null;
-    auraPair.b = null;
-    auraPair.influence = 0;
+    downCache.length = 0;
     while (particles.length > 0) recycleParticle(0);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
@@ -806,8 +1097,13 @@
     ctx.fillRect(0, 0, viewW, viewH);
   }
 
+  function setGlow(id) {
+    activeGlow = id || "soft";
+  }
+
   window.AURA_ENGINE = {
     setPalette,
+    setGlow,
     resetMatter,
     setInteractive(value) {
       interactive = !!value;
