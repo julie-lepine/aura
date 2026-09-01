@@ -18,6 +18,7 @@
     <canvas id="aura"></canvas>
 
     <section class="screen is-on" data-screen="intro" id="screen-intro">
+      <div class="intro-glow" aria-hidden="true"></div>
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
       <button type="button" class="btn-primary" id="btn-enter">
         Créer une aura
@@ -47,11 +48,19 @@
         <h1>Ton aura</h1>
         <p class="lede">Choisis ton ambiance.</p>
 
+        <div class="preview-stage" id="preview-stage">
+          <canvas id="aura-preview"></canvas>
+          <p class="preview-hint">Touche pour ressentir.</p>
+        </div>
+
         <h2>Palette</h2>
         <div class="choice-row" id="palette-list"></div>
 
         <h2>Glow</h2>
         <div class="choice-row" id="glow-list"></div>
+
+        <h2>Ambiance</h2>
+        <div class="mood-row" id="mood-list"></div>
 
         <button type="button" class="btn-primary btn-wide" id="btn-create">
           Créer mon aura
@@ -67,23 +76,37 @@
 
     <section class="screen" data-screen="result" id="screen-result">
       <div class="result">
-        <h1>Ton aura</h1>
-        <div class="result-frame">
-          <video id="result-video" playsinline webkit-playsinline muted loop></video>
-        </div>
+        <h1>aura</h1>
         <p class="result-name" id="result-name"></p>
+        <div class="result-frame" id="result-frame">
+          <video id="result-video" playsinline webkit-playsinline muted loop></video>
+          <img id="result-still" alt="" hidden>
+        </div>
         <p class="result-meta" id="result-meta"></p>
+        <p class="result-meta result-meta-sub" id="result-meta-sub"></p>
+        <div id="result-moments" hidden>
+          <h2>Moments</h2>
+          <div id="result-moments-list"></div>
+        </div>
         <div class="result-actions">
-          <a class="btn-primary" id="btn-download">Télécharger</a>
-          <button type="button" class="btn-ghost" id="btn-replay">Rejouer</button>
+          <button type="button" class="btn-primary" id="btn-download-image" hidden>
+            Télécharger l’image
+          </button>
+          <button type="button" class="btn-ghost" id="btn-download-moments" hidden>
+            Télécharger les 3
+          </button>
+          <a class="btn-ghost" id="btn-download">Télécharger la vidéo</a>
           <button type="button" class="btn-ghost" id="btn-new-aura">
             Nouvelle aura
           </button>
+          <button type="button" class="btn-ghost" id="btn-replay">Rejouer</button>
         </div>
       </div>
     </section>
 
     <div id="create-controls" hidden>
+      <div id="record-timer" hidden>00:00</div>
+      <div class="create-controls-row">
       <button type="button" class="ctrl" id="btn-stop" hidden aria-label="Stop">
         <img src="assets/aura_stop.svg" alt="" />
       </button>
@@ -93,6 +116,21 @@
         </button>
         <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="Pause">
           <img src="assets/aura_pause.svg" alt="" />
+        </button>
+      </div>
+      </div>
+    </div>
+    <div id="pause-edit" hidden>
+      <div class="pause-edit-list" id="pause-palette-list" hidden></div>
+      <div class="pause-edit-list" id="pause-glow-list" hidden></div>
+      <div class="pause-edit-actions">
+        <button type="button" class="pause-edit-toggle" id="btn-edit-palette">
+          Modifier la palette
+          <span class="pause-edit-current" id="pause-palette-current">Éclat</span>
+        </button>
+        <button type="button" class="pause-edit-toggle" id="btn-edit-glow">
+          Modifier le glow
+          <span class="pause-edit-current" id="pause-glow-current">Soft</span>
         </button>
       </div>
     </div>
@@ -127,8 +165,10 @@
     </div>
 
     <script src="palettes.js"></script>
+    <script src="preview.js"></script>
     <script src="app.js"></script>
     <script src="record.js"></script>
+    <script src="signature.js"></script>
     <script src="flow.js"></script>
   </body>
 </html>

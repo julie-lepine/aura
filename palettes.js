@@ -58,6 +58,25 @@
     { id: "ember", name: "Ember", available: true },
     { id: "burst", name: "Burst", available: true },
     { id: "liquid", name: "Liquid", available: true },
+    { id: "hearts", name: "Hearts", available: true },
+  ];
+
+  window.AURA_MOODS = [
+    {
+      id: "calm",
+      name: "Calm",
+      lede: "Prends ton temps.",
+    },
+    {
+      id: "flow",
+      name: "Flow",
+      lede: "Laisse-toi porter.",
+    },
+    {
+      id: "wild",
+      name: "Wild",
+      lede: "Laisse l’énergie monter.",
+    },
   ];
 
   window.AURA_NAMES = [
@@ -73,5 +92,17 @@
     "Silent Bloom",
     "Ember Wake",
     "Glass Tide",
+    "Velvet Motion",
+    "Silent Pulse",
+    "Cosmic Drift",
+    "Liquid Light",
+    "Warm Echo",
+    "Night Ribbon",
+    "Pale Fire",
+    "Inner Tide",
+    "Soft Horizon",
+    "Hidden Bloom",
+    "Amber Drift",
+    "Quiet Nova",
   ];
 })();

@@ -30,6 +30,54 @@
     cohesion: 0.014,
   };
 
+  const MOOD_MUL = {
+    calm: {
+      follow: 0.68,
+      stir: 0.5,
+      inherit: 0.84,
+      dissipate: 0.7,
+      stretch: 0.78,
+      turbulence: 0.52,
+      matterCatch: 0.72,
+      spacing: 1.16,
+      fleck: 0.45,
+    },
+    flow: {
+      follow: 1,
+      stir: 1,
+      inherit: 1,
+      dissipate: 1,
+      stretch: 1,
+      turbulence: 1,
+      matterCatch: 1,
+      spacing: 1,
+      fleck: 1,
+    },
+    wild: {
+      follow: 1.22,
+      stir: 1.55,
+      inherit: 1.14,
+      dissipate: 1.18,
+      stretch: 1.32,
+      turbulence: 1.42,
+      matterCatch: 1.18,
+      spacing: 0.84,
+      fleck: 1.65,
+    },
+  };
+
+  let moodId = "flow";
+
+  function feel(key) {
+    const mul = (MOOD_MUL[moodId] || MOOD_MUL.flow)[key];
+    return FEEL[key] * (mul == null ? 1 : mul);
+  }
+
+  function moodMul(key) {
+    const mul = (MOOD_MUL[moodId] || MOOD_MUL.flow)[key];
+    return mul == null ? 1 : mul;
+  }
+
   // Couche multi-touch uniquement — n'intervient pas à un doigt.
   const INTERACT = {
     radiusPad: 120,
@@ -64,6 +112,7 @@
   let tick = 0;
 
   const glowSprites = PALETTE.map((rgb) => createGlowSprite(rgb[0], rgb[1], rgb[2]));
+  const heartSprites = PALETTE.map((rgb) => createHeartSprite(rgb[0], rgb[1], rgb[2]));
   let interactive = false;
   let activeGlow = "soft";
   const FLECK_CAP = 48;
@@ -108,6 +157,47 @@
     return sprite;
   }
 
+  function fillHeartPath(gfx, cx, cy, scale) {
+    const s = scale;
+    gfx.beginPath();
+    gfx.moveTo(cx, cy + s * 0.32);
+    gfx.bezierCurveTo(cx - s * 0.18, cy + s * 0.02, cx - s * 0.52, cy - s * 0.18, cx - s * 0.28, cy - s * 0.42);
+    gfx.bezierCurveTo(cx - s * 0.1, cy - s * 0.58, cx + s * 0.02, cy - s * 0.42, cx, cy - s * 0.2);
+    gfx.bezierCurveTo(cx - s * 0.02, cy - s * 0.42, cx + s * 0.1, cy - s * 0.58, cx + s * 0.28, cy - s * 0.42);
+    gfx.bezierCurveTo(cx + s * 0.52, cy - s * 0.18, cx + s * 0.18, cy + s * 0.02, cx, cy + s * 0.32);
+    gfx.closePath();
+  }
+
+  function createHeartSprite(r, g, b) {
+    const size = 96;
+    const sprite = document.createElement("canvas");
+    sprite.width = size;
+    sprite.height = size;
+    const gfx = sprite.getContext("2d");
+    const mid = size * 0.5;
+    const cr = Math.round(r * 0.38 + 255 * 0.62);
+    const cg = Math.round(g * 0.38 + 255 * 0.62);
+    const cb = Math.round(b * 0.38 + 255 * 0.62);
+    const aura = gfx.createRadialGradient(mid, mid * 1.04, 0, mid, mid * 1.04, mid * 0.96);
+    aura.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.32)`);
+    aura.addColorStop(0.42, `rgba(${r}, ${g}, ${b}, 0.1)`);
+    aura.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    gfx.fillStyle = aura;
+    gfx.fillRect(0, 0, size, size);
+    gfx.globalCompositeOperation = "lighter";
+    fillHeartPath(gfx, mid, mid * 0.98, size * 0.34);
+    gfx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.34)`;
+    gfx.fill();
+    fillHeartPath(gfx, mid, mid * 0.98, size * 0.22);
+    gfx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.5)`;
+    gfx.fill();
+    fillHeartPath(gfx, mid - size * 0.02, mid * 0.9, size * 0.1);
+    gfx.fillStyle = `rgba(${cr}, ${cg}, ${cb}, 0.38)`;
+    gfx.fill();
+    gfx.globalCompositeOperation = "source-over";
+    return sprite;
+  }
+
   function currentWidth(source) {
     return FEEL.haloMin + source.pressure * (FEEL.haloMax - FEEL.haloMin);
   }
@@ -131,8 +221,8 @@
     const a = Math.sin(x * s + t) + Math.sin((x + y) * s * 0.73 + t * 1.07);
     const b = Math.cos(y * s - t * 0.81) + Math.cos((x - y) * s * 0.61 + t * 0.93);
     return {
-      x: b * FEEL.turbulence,
-      y: -a * FEEL.turbulence,
+      x: b * feel("turbulence"),
+      y: -a * feel("turbulence"),
     };
   }
 
@@ -298,7 +388,7 @@
     particle.angle = angle;
     particle.life = 1;
     particle.decay =
-      (FEEL.dissipate + Math.random() * 0.14) *
+      (feel("dissipate") + Math.random() * 0.14) *
       (activeGlow === "liquid" ? 0.72 : 1);
     particle.lag = 0.4 + Math.random() * 0.9;
     particle.glow = 0.62 + Math.random() * 0.4;
@@ -331,14 +421,14 @@
       px += -source.vy * inv * side;
       py += source.vx * inv * side;
     }
-    let inherit = FEEL.inherit + Math.min(0.22, speed * 0.04);
+    let inherit = feel("inherit") + Math.min(0.22, speed * 0.04);
     if (activeGlow === "liquid") inherit = Math.min(0.84, inherit * 1.12);
     spawnParticle(source, px, py, inherit, false);
     maybeEmitFlecks(source, px, py, speed);
   }
 
   function spawnFleck(source, x, y, role, vx, vy) {
-    if (activeGlow === "soft" || activeGlow === "liquid") return;
+    if (activeGlow === "soft" || activeGlow === "liquid" || activeGlow === "hearts") return;
     if (fleckCount() >= FLECK_CAP) recycleOldestFleck();
     if (particles.length >= maxParticles) recycleOldestFleck();
     if (particles.length >= maxParticles) return;
@@ -380,8 +470,10 @@
   }
 
   function maybeEmitFlecks(source, x, y, speed) {
+    const fleck = moodMul("fleck");
     if (activeGlow === "spark") {
-      const n = Math.random() < 0.55 ? 2 : 1;
+      if (fleck < 1 && Math.random() > fleck) return;
+      const n = fleck > 1.2 ? 3 : Math.random() < 0.55 ? 2 : 1;
       for (let i = 0; i < n; i += 1) {
         spawnFleck(
           source,
@@ -394,6 +486,7 @@
       }
     }
     if (activeGlow === "ember") {
+      if (fleck < 1 && Math.random() > fleck) return;
       const n = speed > 3 ? 2 : 1;
       for (let i = 0; i < n; i += 1) {
         spawnFleck(
@@ -406,13 +499,13 @@
         );
       }
     }
-    if (activeGlow === "burst" && speed > 1.6 && Math.random() < 0.42) {
+    if (activeGlow === "burst" && speed > 1.6 && Math.random() < 0.42 * fleck) {
       emitBurst(source, x, y, speed);
     }
   }
 
   function maybeShedFlecks(source) {
-    if (activeGlow === "spark" && Math.random() < 0.1) {
+    if (activeGlow === "spark" && Math.random() < 0.1 * moodMul("fleck")) {
       spawnFleck(
         source,
         source.matterX + (Math.random() - 0.5) * 28,
@@ -422,7 +515,7 @@
         source.vy * 0.25 + (Math.random() - 0.5) * 1.6
       );
     }
-    if (activeGlow === "ember" && Math.random() < 0.16) {
+    if (activeGlow === "ember" && Math.random() < 0.16 * moodMul("fleck")) {
       spawnFleck(
         source,
         source.matterX + (Math.random() - 0.5) * 18,
@@ -437,7 +530,7 @@
   function emitBurst(source, x, y, speed) {
     if (activeGlow !== "burst") return;
     const heading = Math.atan2(source.vy, source.vx);
-    const count = speed > 3.2 ? 7 : 5;
+    const count = Math.round((speed > 3.2 ? 7 : 5) * Math.min(1.4, moodMul("fleck")));
     for (let i = 0; i < count; i += 1) {
       const side = i % 2 === 0 ? 1 : -1;
       const ang = heading + side * (0.45 + Math.random() * 1.05) + (Math.random() - 0.5) * 0.35;
@@ -469,7 +562,7 @@
       const along = ox * nx + oy * ny;
       const stretch = Math.min(
         3.2,
-        1 + speed * FEEL.stretch * (activeGlow === "liquid" ? 1.42 : 1)
+        1 + speed * feel("stretch") * (activeGlow === "liquid" ? 1.42 : 1)
       );
       const compress = 1 / Math.sqrt(stretch);
       ox = along * nx * stretch + (ox - along * nx) * compress;
@@ -483,8 +576,8 @@
   }
 
   function stepMatter(source, t) {
-    source.matterVx += (source.x - source.matterX) * FEEL.matterCatch * t;
-    source.matterVy += (source.y - source.matterY) * FEEL.matterCatch * t;
+    source.matterVx += (source.x - source.matterX) * feel("matterCatch") * t;
+    source.matterVy += (source.y - source.matterY) * feel("matterCatch") * t;
     source.matterVx *= Math.pow(FEEL.matterDrag, t);
     source.matterVy *= Math.pow(FEEL.matterDrag, t);
     source.matterX += source.matterVx * t;
@@ -661,8 +754,8 @@
 
     if (isLiveHead) {
       const target = headTarget(particle, source);
-      particle.vx += (target.x - particle.x) * FEEL.follow * particle.lag * t;
-      particle.vy += (target.y - particle.y) * FEEL.follow * particle.lag * t;
+      particle.vx += (target.x - particle.x) * feel("follow") * particle.lag * t;
+      particle.vy += (target.y - particle.y) * feel("follow") * particle.lag * t;
       particle.vx += (source.vx - particle.vx) * 0.08 * t;
       particle.vy += (source.vy - particle.vy) * 0.08 * t;
       particle.halo = currentWidth(source) * particle.haloMul;
@@ -676,8 +769,8 @@
       const dx = particle.x - source.matterX;
       const dy = particle.y - source.matterY;
       const falloff = Math.exp(-(dx * dx + dy * dy) / (width * width * 2.8 + 80));
-      particle.vx += source.ax * FEEL.stir * falloff;
-      particle.vy += source.ay * FEEL.stir * falloff;
+      particle.vx += source.ax * feel("stir") * falloff;
+      particle.vy += source.ay * feel("stir") * falloff;
     }
 
     applyPairColor(particle, t);
@@ -830,6 +923,35 @@
     ctx.drawImage(sprite, p.x - r, p.y - r, r * 2, r * 2);
   }
 
+  function drawHeartSprite(sprite, x, y, size, rot, alpha) {
+    if (!sprite || alpha < 0.02 || size < 1.5) return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(sprite, -size, -size, size * 2, size * 2);
+    ctx.restore();
+  }
+
+  function drawHeartMatter(p, alpha) {
+    const radius = p.halo * 1.08;
+    drawMatterSprite(p, p.x - radius, p.y - radius, radius * 2, radius * 2, alpha * 0.7);
+    const spriteA = heartSprites[p.toneA] || glowSprites[p.toneA];
+    const spriteB = heartSprites[p.toneB] || spriteA;
+    const count = p.halo > 92 ? 4 : p.halo > 54 ? 3 : 2;
+    const swirl = tick * 0.01 + p.phase;
+    for (let i = 0; i < count; i += 1) {
+      const ang = p.angle + i * 2.05 + p.phase * 0.4;
+      const dist = p.halo * (0.06 + (i % 3) * 0.1) * (0.55 + p.spreadMul * 0.45);
+      const hx = p.x + Math.cos(ang) * dist;
+      const hy = p.y + Math.sin(ang) * dist;
+      const size = p.halo * (0.2 + (i % 2) * 0.07) * (0.72 + 0.28 * Math.sin(swirl + i * 1.3));
+      const rot = Math.sin(swirl * 0.7 + i) * 0.38 + p.angle * 0.12;
+      const sprite = p.mix > 0.55 && i % 2 === 1 ? spriteB : spriteA;
+      drawHeartSprite(sprite, hx, hy, size, rot, alpha * (0.62 + p.glow * 0.4) * (i === 0 ? 1 : 0.78));
+    }
+  }
+
   function drawHalo(p) {
     if (p.role !== "matter") {
       drawFleck(p);
@@ -838,6 +960,11 @@
 
     const alpha = p.life * p.life * p.glow * FEEL.glowAlpha;
     if (alpha < 0.012) return;
+
+    if (activeGlow === "hearts") {
+      drawHeartMatter(p, alpha);
+      return;
+    }
 
     if (activeGlow !== "liquid") {
       const radius = p.halo * 1.2;
@@ -980,6 +1107,7 @@
       const speedN = Math.min(1, speed / 8);
       let spacing = Math.max(width * 0.17, width * (0.19 + speedN * 0.3));
       if (activeGlow === "liquid") spacing *= 0.64;
+      spacing *= moodMul("spacing");
       source.travelAcc += dist;
       const x0 = source.x;
       const y0 = source.y;
@@ -1081,9 +1209,11 @@
     PALETTE.length = 0;
     for (let i = 0; i < colors.length; i += 1) PALETTE.push(colors[i]);
     glowSprites.length = 0;
+    heartSprites.length = 0;
     for (let i = 0; i < PALETTE.length; i += 1) {
       const rgb = PALETTE[i];
       glowSprites.push(createGlowSprite(rgb[0], rgb[1], rgb[2]));
+      heartSprites.push(createHeartSprite(rgb[0], rgb[1], rgb[2]));
     }
   }
 
@@ -1101,9 +1231,14 @@
     activeGlow = id || "soft";
   }
 
+  function setMood(id) {
+    moodId = MOOD_MUL[id] ? id : "flow";
+  }
+
   window.AURA_ENGINE = {
     setPalette,
     setGlow,
+    setMood,
     resetMatter,
     setInteractive(value) {
       interactive = !!value;

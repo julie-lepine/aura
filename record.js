@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const MAX_RECORDING_DURATION = 0;
+  const RECORDING_MAX_DURATION = 30;
   const RECORD_QUALITY = "standard";
   const RECORD_FPS = 30;
 
@@ -13,6 +13,8 @@
     blob: null,
     url: null,
     mimeType: "",
+    elapsedMs: 0,
+    runStartedAt: 0,
   };
 
   function pickMimeType() {
@@ -58,6 +60,8 @@
     recorderState.stream = null;
     recorderState.blob = null;
     recorderState.url = null;
+    recorderState.elapsedMs = 0;
+    recorderState.runStartedAt = 0;
   }
 
   function start() {
@@ -87,6 +91,8 @@
 
     recorderState.recorder.start(250);
     recorderState.status = "recording";
+    recorderState.elapsedMs = 0;
+    recorderState.runStartedAt = performance.now();
     return recorderState;
   }
 
@@ -101,6 +107,10 @@
     }
     recorderState.status =
       recorderState.recorder.state === "paused" ? "paused" : "recording";
+    if (recorderState.status === "paused" && recorderState.runStartedAt) {
+      recorderState.elapsedMs += performance.now() - recorderState.runStartedAt;
+      recorderState.runStartedAt = 0;
+    }
     return recorderState;
   }
 
@@ -118,7 +128,24 @@
     }
     recorderState.status =
       recorderState.recorder.state === "recording" ? "recording" : "paused";
+    if (recorderState.status === "recording") {
+      recorderState.runStartedAt = performance.now();
+    }
     return recorderState;
+  }
+
+  function freezeElapsed() {
+    if (recorderState.runStartedAt) {
+      recorderState.elapsedMs += performance.now() - recorderState.runStartedAt;
+      recorderState.runStartedAt = 0;
+    }
+  }
+
+  function getElapsedMs() {
+    if (recorderState.status === "recording" && recorderState.runStartedAt) {
+      return recorderState.elapsedMs + (performance.now() - recorderState.runStartedAt);
+    }
+    return recorderState.elapsedMs;
   }
 
   function stop() {
@@ -131,6 +158,7 @@
       }
 
       recorderState.status = "processing";
+      freezeElapsed();
       rec.onstop = () => {
         const type = recorderState.mimeType || "video/webm";
         recorderState.blob = new Blob(recorderState.chunks, { type });
@@ -177,7 +205,8 @@
   }
 
   window.AURA_RECORD = {
-    MAX_RECORDING_DURATION,
+    RECORDING_MAX_DURATION,
+    MAX_RECORDING_DURATION: RECORDING_MAX_DURATION,
     RECORD_QUALITY,
     start,
     pause,
@@ -186,6 +215,7 @@
     cleanup,
     showInterstitialAd,
     fileName,
+    getElapsedMs,
     getState() {
       return recorderState;
     },
