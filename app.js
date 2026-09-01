@@ -7,7 +7,7 @@
   const FEEL = {
     glowAlpha: 0.2,
     haloMin: 39,
-    haloMax: 88,
+    haloMax: 132,
     holdRamp: 1.7,
     stillSpeed: 1.05,
     headCount: 7,
@@ -38,7 +38,7 @@
     particlePull: 0.01,
     swirl: 0.01,
     turbBoost: 0.85,
-    colorBleed: 0.06,
+    colorBleed: 0.12,
   };
 
   const auraPair = {
@@ -94,7 +94,7 @@
   }
 
   function createGlowSprite(r, g, b) {
-    const size = 256;
+    const size = 384;
     const sprite = document.createElement("canvas");
     sprite.width = size;
     sprite.height = size;
@@ -461,14 +461,21 @@
       particle.vx += f.x * boost * t;
       particle.vy += f.y * boost * t;
     }
+  }
 
-    if (auraPair.influence > 0.2) {
-      particle.toneB = other.toneA;
-      const bleed = auraPair.influence * 0.32;
-      if (bleed > particle.mix) {
-        particle.mix += (bleed - particle.mix) * INTERACT.colorBleed * t;
-      }
-    }
+  function applyPairColor(particle, t) {
+    if (!auraPair.active) return;
+    const other =
+      particle.sourceId === auraPair.a.id
+        ? auraPair.b
+        : particle.sourceId === auraPair.b.id
+          ? auraPair.a
+          : null;
+    if (!other) return;
+
+    particle.toneB = other.toneA;
+    const target = auraPair.influence * 0.5;
+    particle.mix += (target - particle.mix) * INTERACT.colorBleed * t;
   }
 
   function stepParticle(particle, t) {
@@ -497,6 +504,8 @@
       particle.vx += source.ax * FEEL.stir * falloff;
       particle.vy += source.ay * FEEL.stir * falloff;
     }
+
+    applyPairColor(particle, t);
 
     const drag = isLiveHead
       ? FEEL.dragHead
@@ -567,7 +576,7 @@
     const x = p.x - radius;
     const y = p.y - radius;
     const mix = p.mix;
-    if (mix < 0.06) {
+    if (mix < 0.03) {
       ctx.globalAlpha = alpha;
       ctx.drawImage(glowSprites[p.toneA], x, y, d, d);
       return;
