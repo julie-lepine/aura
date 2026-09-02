@@ -4,7 +4,7 @@
   window.AURA_PALETTES = [
     {
       id: "default",
-      name: "Éclat",
+      name: "éclat",
       colors: [
         [168, 64, 255],
         [255, 58, 168],
@@ -16,7 +16,7 @@
     },
     {
       id: "dawn",
-      name: "Aube",
+      name: "aube",
       colors: [
         [255, 72, 132],
         [255, 118, 86],
@@ -28,7 +28,7 @@
     },
     {
       id: "tide",
-      name: "Marée",
+      name: "marée",
       colors: [
         [36, 132, 255],
         [0, 196, 232],
@@ -40,7 +40,7 @@
     },
     {
       id: "garden",
-      name: "Jardin",
+      name: "jardin",
       colors: [
         [28, 216, 132],
         [156, 228, 48],
@@ -53,56 +53,56 @@
   ];
 
   window.AURA_GLOWS = [
-    { id: "soft", name: "Soft", available: true },
-    { id: "spark", name: "Spark", available: true },
-    { id: "ember", name: "Ember", available: true },
-    { id: "burst", name: "Burst", available: true },
-    { id: "liquid", name: "Liquid", available: true },
-    { id: "hearts", name: "Hearts", available: true },
+    { id: "soft", name: "doux", available: true },
+    { id: "spark", name: "étincelle", available: true },
+    { id: "feu", name: "feu", available: true },
+    { id: "burst", name: "éclat", available: true },
+    { id: "liquid", name: "liquide", available: true },
+    { id: "hearts", name: "cœurs", available: true },
   ];
 
   window.AURA_MOODS = [
     {
       id: "calm",
-      name: "Calm",
-      lede: "Prends ton temps.",
+      name: "calme",
+      lede: "prends ton temps.",
     },
     {
       id: "flow",
-      name: "Flow",
-      lede: "Laisse-toi porter.",
+      name: "flot",
+      lede: "laisse-toi porter.",
     },
     {
       id: "wild",
-      name: "Wild",
-      lede: "Laisse l’énergie monter.",
+      name: "vive",
+      lede: "laisse l’énergie monter.",
     },
   ];
 
   window.AURA_NAMES = [
-    "Afterglow",
-    "Slow Orbit",
-    "Quiet Drift",
-    "Electric Bloom",
-    "Soft Current",
-    "Lunar Flow",
-    "Neon Tide",
-    "Velvet Pulse",
-    "Dawn Spiral",
-    "Silent Bloom",
-    "Ember Wake",
-    "Glass Tide",
-    "Velvet Motion",
-    "Silent Pulse",
-    "Cosmic Drift",
-    "Liquid Light",
-    "Warm Echo",
-    "Night Ribbon",
-    "Pale Fire",
-    "Inner Tide",
-    "Soft Horizon",
-    "Hidden Bloom",
-    "Amber Drift",
-    "Quiet Nova",
+    "afterglow",
+    "slow orbit",
+    "quiet drift",
+    "electric bloom",
+    "soft current",
+    "lunar flow",
+    "neon tide",
+    "velvet pulse",
+    "dawn spiral",
+    "silent bloom",
+    "warm wake",
+    "glass tide",
+    "velvet motion",
+    "silent pulse",
+    "cosmic drift",
+    "liquid light",
+    "warm echo",
+    "night ribbon",
+    "pale fire",
+    "inner tide",
+    "soft horizon",
+    "hidden bloom",
+    "amber drift",
+    "quiet nova",
   ];
 })();

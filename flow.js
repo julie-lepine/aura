@@ -62,7 +62,6 @@
   const resultName = document.getElementById("result-name");
   const resultMeta = document.getElementById("result-meta");
   const resultMetaSub = document.getElementById("result-meta-sub");
-  const previewCanvas = document.getElementById("aura-preview");
 
   let timerRaf = 0;
 
@@ -79,7 +78,7 @@
   }
 
   function pickAuraName(paletteId, glowId, moodId) {
-    const names = window.AURA_NAMES || ["Afterglow"];
+    const names = window.AURA_NAMES || ["afterglow"];
     const seed = `${paletteId}|${glowId}|${moodId}|${Date.now()}`;
     let hash = 2166136261;
     for (let i = 0; i < seed.length; i += 1) {
@@ -270,7 +269,7 @@
     });
     syncMomentSelection(selected);
     btnDownloadMoments.hidden = moments.length < 2;
-    btnDownloadMoments.textContent = moments.length === 2 ? "Télécharger les 2" : "Télécharger les 3";
+    btnDownloadMoments.textContent = moments.length === 2 ? "télécharger les 2" : "télécharger les 3";
   }
 
   function triggerDownload(blob, name) {
@@ -287,24 +286,6 @@
     resultVideo.pause();
     resultVideo.removeAttribute("src");
     resultVideo.load();
-  }
-
-  function syncPreview() {
-    if (!window.AURA_PREVIEW) return;
-    const palette = paletteById(appState.auraConfig.palette);
-    window.AURA_PREVIEW.setPalette(palette.colors);
-    window.AURA_PREVIEW.setGlow(appState.auraConfig.glow);
-    window.AURA_PREVIEW.setMood(appState.auraConfig.mood);
-  }
-
-  function startPreview() {
-    if (!window.AURA_PREVIEW || !previewCanvas) return;
-    syncPreview();
-    window.AURA_PREVIEW.start(previewCanvas);
-  }
-
-  function stopPreview() {
-    if (window.AURA_PREVIEW) window.AURA_PREVIEW.stop();
   }
 
   function stopTimerLoop() {
@@ -388,10 +369,6 @@
     const silent = options && options.silent;
     if (from === screen && !(options && options.force)) return;
 
-    if (from === APP_SCREENS.CONFIG && screen !== APP_SCREENS.CONFIG) {
-      stopPreview();
-    }
-
     if (from === APP_SCREENS.RESULT && screen !== APP_SCREENS.RESULT) {
       pauseResultVideo();
     }
@@ -425,10 +402,6 @@
     else showTimer(false);
     updateViewportMode();
 
-    if (screen === APP_SCREENS.CONFIG) {
-      window.requestAnimationFrame(() => startPreview());
-    }
-
     const historyMode = (options && options.history) || "auto";
     let mode = historyMode;
     if (historyMode === "auto") {
@@ -456,6 +429,7 @@
   }
 
   function applyConfigToEngine() {
+    if (!window.AURA_ENGINE) return;
     const palette = paletteById(appState.auraConfig.palette);
     window.AURA_ENGINE.setPalette(palette.colors);
     window.AURA_ENGINE.setGlow(appState.auraConfig.glow);
@@ -472,27 +446,39 @@
 
   function enterCreate() {
     if (appState.busy) return;
-    applyConfigToEngine();
-    window.AURA_RECORD.cleanup();
-    resetSignature();
     go(APP_SCREENS.CREATE);
+    try {
+      applyConfigToEngine();
+      if (window.AURA_ENGINE && typeof window.AURA_ENGINE.resize === "function") {
+        window.AURA_ENGINE.resize();
+      }
+    } catch (err) {
+      /* canvas must still open */
+    }
+    if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
+    resetSignature();
+    updateViewportMode();
   }
 
   function leaveCreateToConfig() {
     if (appState.busy) return;
-    window.AURA_RECORD.cleanup();
+    if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
     resetSignature();
-    window.AURA_ENGINE.resetMatter();
-    window.AURA_ENGINE.setInteractive(false);
+    if (window.AURA_ENGINE) {
+      window.AURA_ENGINE.resetMatter();
+      window.AURA_ENGINE.setInteractive(false);
+    }
     go(APP_SCREENS.CONFIG, { history: "replace" });
   }
 
   function leaveResultToConfig() {
     pauseResultVideo();
-    window.AURA_RECORD.cleanup();
+    if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
     resetSignature();
-    window.AURA_ENGINE.resetMatter();
-    window.AURA_ENGINE.setInteractive(false);
+    if (window.AURA_ENGINE) {
+      window.AURA_ENGINE.resetMatter();
+      window.AURA_ENGINE.setInteractive(false);
+    }
     go(APP_SCREENS.CONFIG, { history: "replace" });
   }
 
@@ -535,7 +521,6 @@
           card.classList.toggle("is-selected", card.dataset.id === palette.id);
         });
         syncPausePaletteSelection();
-        syncPreview();
       });
       root.appendChild(btn);
     });
@@ -550,7 +535,8 @@
     let extra = 0;
     let extraClass = "dot";
     if (glowId === "spark") extra = 6;
-    else if (glowId === "ember" || glowId === "burst") extra = 5;
+    else if (glowId === "burst" || glowId === "feu") extra = 5;
+    else if (glowId === "liquid") extra = 3;
     else if (glowId === "hearts") {
       extra = 7;
       extraClass = "heart";
@@ -586,7 +572,6 @@
           card.classList.toggle("is-selected", card.dataset.id === glow.id);
         });
         syncPauseGlowSelection();
-        syncPreview();
       });
       root.appendChild(btn);
     });
@@ -659,21 +644,22 @@
         root.querySelectorAll(".mood-card").forEach((card) => {
           card.classList.toggle("is-selected", card.dataset.id === mood.id);
         });
-        syncPreview();
       });
       root.appendChild(btn);
     });
   }
 
   function showResult() {
-    const rec = window.AURA_RECORD.getState();
+    const rec = window.AURA_RECORD
+      ? window.AURA_RECORD.getState()
+      : { url: null };
     const sig = window.AURA_SIGNATURE
       ? window.AURA_SIGNATURE.getState()
       : { selectedSignatureFrame: null, topSignatureMoments: [] };
     const palette = paletteById(appState.auraConfig.palette);
     const glow = glowById(appState.auraConfig.glow);
     const mood = moodById(appState.auraConfig.mood);
-    const durationMs = window.AURA_RECORD.getElapsedMs();
+    const durationMs = window.AURA_RECORD ? window.AURA_RECORD.getElapsedMs() : 0;
     appState.creation = {
       name: pickAuraName(palette.id, glow.id, mood.id),
       palette: palette.id,
@@ -693,7 +679,9 @@
       resultVideo.classList.remove("is-empty");
       downloadLink.hidden = false;
       downloadLink.href = rec.url;
-      downloadLink.download = window.AURA_RECORD.fileName(appState.creation.name);
+      downloadLink.download = window.AURA_RECORD
+        ? window.AURA_RECORD.fileName(appState.creation.name)
+        : "aura.webm";
       const play = resultVideo.play();
       if (play && typeof play.catch === "function") play.catch(() => {});
     } else {
@@ -721,12 +709,12 @@
       window.AURA_SIGNATURE.pause();
       window.AURA_SIGNATURE.captureNow(true);
     }
-    window.AURA_ENGINE.setInteractive(false);
+    if (window.AURA_ENGINE) window.AURA_ENGINE.setInteractive(false);
     createBar.hidden = true;
     btnBackConfig.hidden = true;
     go(APP_SCREENS.PROCESSING);
     try {
-      await window.AURA_RECORD.stop();
+      if (window.AURA_RECORD) await window.AURA_RECORD.stop();
     } catch (err) {
       /* continue to result even if capture failed */
     }
@@ -738,7 +726,9 @@
       }
     }
     await new Promise((resolve) => window.setTimeout(resolve, 900));
-    await window.AURA_RECORD.showInterstitialAd();
+    if (window.AURA_RECORD && window.AURA_RECORD.showInterstitialAd) {
+      await window.AURA_RECORD.showInterstitialAd();
+    }
     showResult();
   }
 
@@ -764,20 +754,24 @@
         }, 0);
         return;
       }
-      window.AURA_RECORD.cleanup();
+      if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
       resetSignature();
-      window.AURA_ENGINE.resetMatter();
-      window.AURA_ENGINE.setInteractive(false);
+      if (window.AURA_ENGINE) {
+        window.AURA_ENGINE.resetMatter();
+        window.AURA_ENGINE.setInteractive(false);
+      }
       go(APP_SCREENS.CONFIG, { history: "none" });
       return;
     }
 
     if (screen === APP_SCREENS.RESULT) {
       pauseResultVideo();
-      window.AURA_RECORD.cleanup();
+      if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
       resetSignature();
-      window.AURA_ENGINE.resetMatter();
-      window.AURA_ENGINE.setInteractive(false);
+      if (window.AURA_ENGINE) {
+        window.AURA_ENGINE.resetMatter();
+        window.AURA_ENGINE.setInteractive(false);
+      }
       go(APP_SCREENS.CONFIG, { history: "none" });
       return;
     }
@@ -917,9 +911,6 @@
   window.addEventListener("popstate", handlePopState);
   window.addEventListener("resize", () => {
     updateViewportMode();
-    if (appState.screen === APP_SCREENS.CONFIG && window.AURA_PREVIEW) {
-      window.AURA_PREVIEW.resize();
-    }
   });
   window.addEventListener("orientationchange", () => {
     tryLockPortrait();

@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="theme-color" content="#07070c" />
-    <title>AURA</title>
+    <title>aura</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body data-screen="intro">
@@ -21,7 +21,7 @@
       <div class="intro-glow" aria-hidden="true"></div>
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
       <button type="button" class="btn-primary" id="btn-enter">
-        Créer une aura
+        créer une aura
       </button>
     </section>
 
@@ -29,15 +29,15 @@
       <div class="panel">
         <img class="logo logo-sm" src="assets/aura_logo.svg" alt="aura" />
         <p>
-          AURA peut utiliser des cookies pour le fonctionnement du service et,
+          aura peut utiliser des cookies pour le fonctionnement du service et,
           plus tard, pour mesurer l’audience.
         </p>
         <div class="actions">
           <button type="button" class="btn-primary" id="btn-accept">
-            Accepter
+            accepter
           </button>
           <button type="button" class="btn-ghost" id="btn-refuse">
-            Refuser
+            refuser
           </button>
         </div>
       </div>
@@ -45,25 +45,20 @@
 
     <section class="screen" data-screen="configure" id="screen-configure">
       <div class="configure">
-        <h1>Ton aura</h1>
-        <p class="lede">Choisis ton ambiance.</p>
+        <h1>ton aura</h1>
+        <p class="lede">choisis ton ambiance.</p>
 
-        <div class="preview-stage" id="preview-stage">
-          <canvas id="aura-preview"></canvas>
-          <p class="preview-hint">Touche pour ressentir.</p>
-        </div>
-
-        <h2>Palette</h2>
+        <h2>palette</h2>
         <div class="choice-row" id="palette-list"></div>
 
-        <h2>Glow</h2>
+        <h2>glow</h2>
         <div class="choice-row" id="glow-list"></div>
 
-        <h2>Ambiance</h2>
+        <h2>ambiance</h2>
         <div class="mood-row" id="mood-list"></div>
 
         <button type="button" class="btn-primary btn-wide" id="btn-create">
-          Créer mon aura
+          créer mon aura
         </button>
       </div>
     </section>
@@ -85,19 +80,19 @@
         <p class="result-meta" id="result-meta"></p>
         <p class="result-meta result-meta-sub" id="result-meta-sub"></p>
         <div id="result-moments" hidden>
-          <h2>Moments</h2>
+          <h2>moments</h2>
           <div id="result-moments-list"></div>
         </div>
         <div class="result-actions">
           <button type="button" class="btn-primary" id="btn-download-image" hidden>
-            Télécharger l’image
+            télécharger l’image
           </button>
           <button type="button" class="btn-ghost" id="btn-download-moments" hidden>
-            Télécharger les 3
+            télécharger les 3
           </button>
-          <a class="btn-ghost" id="btn-download">Télécharger la vidéo</a>
+          <a class="btn-ghost" id="btn-download">télécharger la vidéo</a>
           <button type="button" class="btn-ghost" id="btn-new-aura">
-            Nouvelle aura
+            nouvelle aura
           </button>
         </div>
       </div>
@@ -106,14 +101,14 @@
     <div id="create-controls" hidden>
       <div id="record-timer" hidden>00:00</div>
       <div class="create-controls-row">
-      <button type="button" class="ctrl" id="btn-stop" hidden aria-label="Stop">
+      <button type="button" class="ctrl" id="btn-stop" hidden aria-label="stop">
         <img src="assets/aura_stop.svg" alt="" />
       </button>
       <div class="ctrl-main-slot">
-        <button type="button" class="ctrl ctrl-main" id="btn-play" aria-label="Play">
+        <button type="button" class="ctrl ctrl-main" id="btn-play" aria-label="play">
           <img src="assets/aura_play.svg" alt="" />
         </button>
-        <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="Pause">
+        <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="pause">
           <img src="assets/aura_pause.svg" alt="" />
         </button>
       </div>
@@ -124,16 +119,16 @@
       <div class="pause-edit-list" id="pause-glow-list" hidden></div>
       <div class="pause-edit-actions">
         <button type="button" class="pause-edit-toggle" id="btn-edit-palette">
-          Modifier la palette
-          <span class="pause-edit-current" id="pause-palette-current">Éclat</span>
+          modifier la palette
+          <span class="pause-edit-current" id="pause-palette-current">éclat</span>
         </button>
         <button type="button" class="pause-edit-toggle" id="btn-edit-glow">
-          Modifier le glow
-          <span class="pause-edit-current" id="pause-glow-current">Soft</span>
+          modifier le glow
+          <span class="pause-edit-current" id="pause-glow-current">doux</span>
         </button>
       </div>
     </div>
-    <button type="button" class="ctrl ctrl-back" id="btn-back-config" hidden aria-label="Retour à la personnalisation">
+    <button type="button" class="ctrl ctrl-back" id="btn-back-config" hidden aria-label="retour à la personnalisation">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <defs>
           <linearGradient id="auraBackGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -155,16 +150,15 @@
 
     <div id="gate-desktop" class="gate" hidden>
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
-      <p>AURA est une expérience conçue pour ton téléphone.</p>
+      <p>aura est une expérience conçue pour ton téléphone.</p>
     </div>
 
     <div id="gate-rotate" class="gate" hidden>
       <img class="logo logo-sm" src="assets/aura_logo.svg" alt="aura" />
-      <p>Tourne ton téléphone en portrait</p>
+      <p>tourne ton téléphone en portrait</p>
     </div>
 
     <script src="palettes.js"></script>
-    <script src="preview.js"></script>
     <script src="app.js"></script>
     <script src="record.js"></script>
     <script src="signature.js"></script>
