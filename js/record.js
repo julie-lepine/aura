@@ -22,11 +22,12 @@
       return "";
     }
     const candidates = [
+      "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+      "video/mp4;codecs=avc1.42E01E",
+      "video/mp4",
       "video/webm;codecs=vp9",
       "video/webm;codecs=vp8",
       "video/webm",
-      "video/mp4;codecs=avc1.42E01E",
-      "video/mp4",
     ];
     for (let i = 0; i < candidates.length; i += 1) {
       if (MediaRecorder.isTypeSupported(candidates[i])) return candidates[i];
@@ -93,6 +94,9 @@
     recorderState.status = "recording";
     recorderState.elapsedMs = 0;
     recorderState.runStartedAt = performance.now();
+    if (window.AURA_ADS && typeof window.AURA_ADS.preloadInterstitial === "function") {
+      window.AURA_ADS.preloadInterstitial();
+    }
     return recorderState;
   }
 
@@ -201,7 +205,14 @@
   }
 
   async function showInterstitialAd() {
-    return Promise.resolve();
+    if (!window.AURA_ADS || typeof window.AURA_ADS.showInterstitialAd !== "function") {
+      return;
+    }
+    try {
+      await window.AURA_ADS.showInterstitialAd();
+    } catch (err) {
+      /* le résultat s'affiche même si la pub échoue */
+    }
   }
 
   window.AURA_RECORD = {

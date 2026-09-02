@@ -50,12 +50,60 @@
         [48, 188, 112],
       ],
     },
+    {
+      id: "moon",
+      name: "lune",
+      colors: [
+        [176, 196, 255],
+        [132, 156, 232],
+        [220, 228, 255],
+        [168, 144, 255],
+        [96, 168, 255],
+        [200, 188, 240],
+      ],
+    },
+    {
+      id: "ember",
+      name: "braise",
+      colors: [
+        [255, 56, 48],
+        [255, 116, 36],
+        [255, 176, 48],
+        [196, 36, 52],
+        [255, 92, 64],
+        [232, 140, 32],
+      ],
+    },
+    {
+      id: "pearl",
+      name: "nacre",
+      colors: [
+        [255, 176, 196],
+        [255, 212, 176],
+        [176, 232, 208],
+        [212, 184, 255],
+        [255, 228, 196],
+        [186, 212, 255],
+      ],
+    },
+    {
+      id: "night",
+      name: "nuit",
+      colors: [
+        [88, 64, 255],
+        [48, 32, 176],
+        [32, 148, 255],
+        [168, 48, 255],
+        [24, 212, 232],
+        [112, 72, 255],
+      ],
+    },
   ];
 
   window.AURA_GLOWS = [
     { id: "soft", name: "doux", available: true },
     { id: "spark", name: "étincelle", available: true },
-    { id: "feu", name: "feu", available: true },
+    { id: "feu", name: "fumée", available: true },
     { id: "burst", name: "éclat", available: true },
     { id: "liquid", name: "liquide", available: true },
     { id: "hearts", name: "cœurs", available: true },
@@ -104,5 +152,9 @@
     "hidden bloom",
     "amber drift",
     "quiet nova",
+    "moon veil",
+    "ember hush",
+    "pearl drift",
+    "night bloom",
   ];
 })();

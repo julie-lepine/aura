@@ -11,6 +11,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="theme-color" content="#07070c" />
     <title>aura</title>
+    <link rel="icon" href="assets/icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/icon.png" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body data-screen="intro">
@@ -29,8 +31,10 @@
       <div class="panel">
         <img class="logo logo-sm" src="assets/aura_logo.svg" alt="aura" />
         <p>
-          aura peut utiliser des cookies pour le fonctionnement du service et,
-          plus tard, pour mesurer l’audience.
+          aura affiche une pub avant le téléchargement.
+        </p>
+        <p>
+          accepter personnalise cette pub. refuser : l’app reste entière, sans tracking.
         </p>
         <div class="actions">
           <button type="button" class="btn-primary" id="btn-accept">
@@ -39,6 +43,14 @@
           <button type="button" class="btn-ghost" id="btn-refuse">
             refuser
           </button>
+          <a
+            class="consent-privacy"
+            href="https://revealthepartygame.fr/aura.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            politique de confidentialité
+          </a>
         </div>
       </div>
     </section>
@@ -84,13 +96,19 @@
           <div id="result-moments-list"></div>
         </div>
         <div class="result-actions">
-          <button type="button" class="btn-primary" id="btn-download-image" hidden>
+          <button type="button" class="btn-primary btn-wide" id="btn-unlock-aura">
+            télécharger mon aura
+          </button>
+          <button type="button" class="btn-ghost" id="btn-download-image" hidden>
             télécharger l’image
           </button>
           <button type="button" class="btn-ghost" id="btn-download-moments" hidden>
             télécharger les 3
           </button>
-          <a class="btn-ghost" id="btn-download">télécharger la vidéo</a>
+          <button type="button" class="btn-ghost" id="btn-download" hidden>
+            télécharger la vidéo
+          </button>
+          <p class="result-save-status" id="result-save-status" hidden></p>
           <button type="button" class="btn-ghost" id="btn-new-aura">
             nouvelle aura
           </button>
@@ -158,10 +176,12 @@
       <p>tourne ton téléphone en portrait</p>
     </div>
 
-    <script src="palettes.js"></script>
-    <script src="app.js"></script>
-    <script src="record.js"></script>
-    <script src="signature.js"></script>
-    <script src="flow.js"></script>
+    <script src="js/palettes.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/ads.js"></script>
+    <script src="js/record.js"></script>
+    <script src="js/signature.js"></script>
+    <script src="js/save.js"></script>
+    <script src="js/flow.js"></script>
   </body>
 </html>

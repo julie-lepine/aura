@@ -1,78 +1,58 @@
-Rose pastel : #F4C9D6
-Lavande pastel : #DCC9EF
+Pub — checklist
+
+Compte et légal
+[x] app créée dans admob (android) — examen requis tant que play n’est pas lié
+[x] unité interstitial aura-visu créée (id prod, pas encore dans l’app)
+[x] politique de confidentialité en ligne
+    https://revealthepartygame.fr/aura.html
+[ ] url dans admob : Confidentialité et messages → message UE/RGPD (pas les paramètres de l’app)
+[ ] fiche play : pub, données, tracking + même url privacy
+
+Consentement
+[x] réécrire l’écran cookies pour la pub réelle
+[x] accepter / refuser : les deux laissent l’app marcher
+[x] refuser = pas de pub, donc pas de tracking
+[x] le refus n’empêche jamais de voir le résultat
+[ ] eee : message ump/admob (confidentialité et messages) — le code est prêt, le formulaire google manque encore
 
 Parcours
+[x] une pub par aura terminée, au tap « télécharger mon aura », avant la page téléchargements
+[x] pas de pub à l’intro, pendant le canvas, ni sur le résultat
+[x] pas de pub si l’enregistrement a échoué
+[x] pas de pub sur retour arrière / nouvelle aura non terminée
+[x] échec pub (no fill, timeout, sdk down) → résultat quand même
+[x] retirer le délai artificiel de 900 ms une fois la pub branchée
 
-1. Ouverture
+Technique
+[x] wrapper capacitor, cible android (com.havefuncorp.aura)
+[x] plugin admob (interstitial)
+[x] précharger l’interstitiel dès play, pas au stop
+[x] brancher le crochet existant showInterstitialAd (record.js / flow.js)
+[x] timeout si la pub ne vient pas
+[x] ids de test sur les builds de dev
+[ ] ids prod uniquement après reco play / admob
+[ ] plafond si enchaînement trop rapide d’auras (plus tard)
 
-écran AURA très épuré
-chargement
-éventuellement transition douce vers la configuration
+Reco
+[ ] build apk/aab de test
+[ ] play internal testing, téléphone android réel
+[ ] vérifier le flow stop → pub → résultat
+[ ] vérifier le flow sans pub (refus, no fill)
+[ ] reco play + admob
+[ ] passer aux ids production
 
-2. Cookies
+Plus tard (pas v1)
+[ ] ios + att
+[ ] i18n
+[ ] rewarded pour télécharger
+[ ] bannière
+[ ] cmp iab complet
+[ ] cap de fréquence fin
 
-consentement classique
-pas de surcharge visuelle
 
-3. « Ton aura » — configuration
+ids admob (prod — ne pas coller dans les builds de test)
+app :         ca-app-pub-6332424645114129~3377348623
+aura-visu :   ca-app-pub-6332424645114129/4021336139
 
-Avant de toucher au canvas, l'utilisateur choisit son univers :
-
-🎨 Palette
-✨ Glow
-éventuellement plus tard :
-matière
-intensité
-fond
-ambiance sonore
-
-Puis Créer mon aura.
-
-4. Création
-
-Canvas plein écran.
-
-Aucune UI intrusive.
-
-L'utilisateur explore librement son aura avec ses doigts.
-
-Et là, surtout : ce n'est pas encore l'enregistrement.
-
-5. Barre de contrôle
-
-En bas :
-
-▶︎ Ⅱ ■
-
-Mais je ferais quelque chose de très minimal.
-
-Play → commence l'enregistrement
-Pause → suspend l'enregistrement
-Stop → termine et valide
-
-Une fois Play lancé, on est véritablement en mode capture.
-
-6. Stop
-
-Au clic sur Stop :
-
-→ fin de capture
-→ interstitiel publicitaire
-→ puis écran résultat.
-
-C'est cohérent parce que la pub arrive après la création, au moment où l'utilisateur attend de voir son résultat.
-
-7. Résultat
-
-Une belle preview vidéo, centrée.
-
-Puis :
-
-Télécharger
-
-Et éventuellement plus tard :
-
-Rejouer
-Nouvelle aura
-Modifier mon aura
-Partager
+test google interstitial (dev) :
+ca-app-pub-3940256099942544/1033173712

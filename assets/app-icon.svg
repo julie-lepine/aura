@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
+  <title>aura</title>
+  <desc>icône dapp : halo pastel rose-lavande sur fond nuit</desc>
+  <defs>
+    <radialGradient id="rose" cx="45%" cy="47%" r="38%">
+      <stop offset="0%" stop-color="#F4C9D6" stop-opacity="0.85"/>
+      <stop offset="42%" stop-color="#F4C9D6" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#F4C9D6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lavender" cx="55%" cy="53%" r="36%">
+      <stop offset="0%" stop-color="#DCC9EF" stop-opacity="0.8"/>
+      <stop offset="45%" stop-color="#DCC9EF" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="11%">
+      <stop offset="0%" stop-color="#FFF8FC" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#F4C9D6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="#07070c"/>
+  <rect width="1024" height="1024" fill="url(#rose)"/>
+  <rect width="1024" height="1024" fill="url(#lavender)"/>
+  <rect width="1024" height="1024" fill="url(#core)"/>
+</svg>

@@ -33,6 +33,7 @@
       status: "idle",
     },
     busy: false,
+    resultPhase: "",
     historyLock: false,
     lastName: "",
   };
@@ -54,9 +55,11 @@
   const resultFrame = document.getElementById("result-frame");
   const resultVideo = document.getElementById("result-video");
   const resultStill = document.getElementById("result-still");
+  const btnUnlockAura = document.getElementById("btn-unlock-aura");
   const downloadLink = document.getElementById("btn-download");
   const btnDownloadImage = document.getElementById("btn-download-image");
   const btnDownloadMoments = document.getElementById("btn-download-moments");
+  const saveStatus = document.getElementById("result-save-status");
   const resultMoments = document.getElementById("result-moments");
   const resultMomentsList = document.getElementById("result-moments-list");
   const resultName = document.getElementById("result-name");
@@ -272,13 +275,45 @@
     btnDownloadMoments.textContent = moments.length === 2 ? "télécharger les 2" : "télécharger les 3";
   }
 
-  function triggerDownload(blob, name) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = name;
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  function setSaveStatus(text, button) {
+    if (!saveStatus) return;
+    if (button) button.insertAdjacentElement("afterend", saveStatus);
+    saveStatus.textContent = text || "";
+    saveStatus.hidden = !text;
+  }
+
+  function setDownloadBusy(busy) {
+    [downloadLink, btnDownloadImage, btnDownloadMoments].forEach((btn) => {
+      if (btn) btn.disabled = busy;
+    });
+  }
+
+  async function saveFiles(files, button) {
+    if (!files || !files.length) return;
+    setDownloadBusy(true);
+    setSaveStatus("enregistrement…", button);
+    try {
+      const result = window.AURA_SAVE
+        ? await window.AURA_SAVE.saveBlobs(files)
+        : null;
+      if (!result || result.method === "web") {
+        setSaveStatus("");
+        return;
+      }
+      if (result.canceled) {
+        setSaveStatus("");
+        return;
+      }
+      if (result.method === "gallery") {
+        setSaveStatus("enregistré dans tes photos", button);
+        return;
+      }
+      setSaveStatus("");
+    } catch (err) {
+      setSaveStatus("enregistrement impossible", button);
+    } finally {
+      setDownloadBusy(false);
+    }
   }
 
   function pauseResultVideo() {
@@ -371,6 +406,7 @@
 
     if (from === APP_SCREENS.RESULT && screen !== APP_SCREENS.RESULT) {
       pauseResultVideo();
+      setResultPhase("");
     }
 
     if (
@@ -437,11 +473,39 @@
     window.AURA_ENGINE.resetMatter();
   }
 
-  function afterIntro() {
+  function rememberConsent(choice) {
+    localStorage.setItem(CONSENT_KEY, choice);
+    if (window.AURA_ADS && typeof window.AURA_ADS.applyChoice === "function") {
+      window.AURA_ADS.applyChoice(choice);
+    }
+  }
+
+  async function afterIntro() {
     if (isDesktop() || !isPortrait()) return;
-    const consent = localStorage.getItem(CONSENT_KEY);
-    if (consent === "accepted" || consent === "refused") go(APP_SCREENS.CONFIG);
-    else go(APP_SCREENS.CONSENT);
+    if (appState.busy) return;
+    appState.busy = true;
+    try {
+      const consent = localStorage.getItem(CONSENT_KEY);
+      if (consent === "accepted" || consent === "refused") {
+        rememberConsent(consent);
+        if (consent === "accepted" && window.AURA_ADS && typeof window.AURA_ADS.syncUmpIfNeeded === "function") {
+          window.AURA_ADS.syncUmpIfNeeded();
+        }
+        go(APP_SCREENS.CONFIG);
+        return;
+      }
+      if (window.AURA_ADS && typeof window.AURA_ADS.resolveLaunchConsent === "function") {
+        const ump = await window.AURA_ADS.resolveLaunchConsent();
+        if (ump && ump.handled) {
+          rememberConsent(ump.adsAllowed ? "accepted" : "refused");
+          go(APP_SCREENS.CONFIG);
+          return;
+        }
+      }
+      go(APP_SCREENS.CONSENT);
+    } finally {
+      appState.busy = false;
+    }
   }
 
   function enterCreate() {
@@ -473,6 +537,7 @@
 
   function leaveResultToConfig() {
     pauseResultVideo();
+    setSaveStatus("");
     if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
     resetSignature();
     if (window.AURA_ENGINE) {
@@ -503,6 +568,7 @@
 
   function renderPaletteCards() {
     const root = document.getElementById("palette-list");
+    root.className = "palette-grid";
     root.innerHTML = "";
     window.AURA_PALETTES.forEach((palette) => {
       const btn = document.createElement("button");
@@ -510,7 +576,7 @@
       btn.className = "choice-card";
       btn.dataset.id = palette.id;
       if (palette.id === appState.auraConfig.palette) btn.classList.add("is-selected");
-      appendSwatches(btn, palette.colors);
+      appendSwatches(btn, palette.colors.slice(0, 5));
       const label = document.createElement("span");
       label.className = "choice-label";
       label.textContent = palette.name;
@@ -608,7 +674,7 @@
       btn.className = "pause-edit-card";
       btn.dataset.id = palette.id;
       if (palette.id === appState.auraConfig.palette) btn.classList.add("is-selected");
-      appendSwatches(btn, palette.colors);
+      appendSwatches(btn, palette.colors.slice(0, 5));
       const label = document.createElement("span");
       label.className = "choice-label";
       label.textContent = palette.name;
@@ -649,6 +715,12 @@
     });
   }
 
+  function setResultPhase(phase) {
+    appState.resultPhase = phase || "";
+    if (phase) document.body.dataset.resultPhase = phase;
+    else delete document.body.dataset.resultPhase;
+  }
+
   function showResult() {
     const rec = window.AURA_RECORD
       ? window.AURA_RECORD.getState()
@@ -674,14 +746,11 @@
     resultMetaSub.textContent = formatDuration(durationMs);
     renderResultMoments();
 
+    setSaveStatus("");
     if (rec.url) {
       resultVideo.src = rec.url;
       resultVideo.classList.remove("is-empty");
       downloadLink.hidden = false;
-      downloadLink.href = rec.url;
-      downloadLink.download = window.AURA_RECORD
-        ? window.AURA_RECORD.fileName(appState.creation.name)
-        : "aura.webm";
       const play = resultVideo.play();
       if (play && typeof play.catch === "function") play.catch(() => {});
     } else {
@@ -695,6 +764,7 @@
     }
 
     go(APP_SCREENS.RESULT);
+    setResultPhase("tease");
     appState.busy = false;
   }
 
@@ -725,11 +795,29 @@
         /* keep result flow even if scoring failed */
       }
     }
-    await new Promise((resolve) => window.setTimeout(resolve, 900));
-    if (window.AURA_RECORD && window.AURA_RECORD.showInterstitialAd) {
-      await window.AURA_RECORD.showInterstitialAd();
-    }
     showResult();
+  }
+
+  async function unlockAura() {
+    if (appState.busy || appState.screen !== APP_SCREENS.RESULT) return;
+    if (appState.resultPhase !== "tease") return;
+    appState.busy = true;
+    const rec = window.AURA_RECORD ? window.AURA_RECORD.getState() : { url: null };
+    const sig = window.AURA_SIGNATURE ? window.AURA_SIGNATURE.getState() : {};
+    const hasAura = Boolean(
+      rec.url ||
+      sig.selectedSignatureFrame ||
+      (sig.topSignatureMoments && sig.topSignatureMoments.length)
+    );
+    if (hasAura && window.AURA_RECORD && window.AURA_RECORD.showInterstitialAd) {
+      try {
+        await window.AURA_RECORD.showInterstitialAd();
+      } catch (err) {
+        /* unlock anyway */
+      }
+    }
+    setResultPhase("unlock");
+    appState.busy = false;
   }
 
   function handlePopState() {
@@ -787,12 +875,12 @@
   });
 
   document.getElementById("btn-accept").addEventListener("click", () => {
-    localStorage.setItem(CONSENT_KEY, "accepted");
+    rememberConsent("accepted");
     go(APP_SCREENS.CONFIG);
   });
 
   document.getElementById("btn-refuse").addEventListener("click", () => {
-    localStorage.setItem(CONSENT_KEY, "refused");
+    rememberConsent("refused");
     go(APP_SCREENS.CONFIG);
   });
 
@@ -849,6 +937,11 @@
     finishRecording();
   });
 
+  btnUnlockAura.addEventListener("click", (event) => {
+    event.stopPropagation();
+    unlockAura();
+  });
+
   resultVideo.addEventListener("click", replayResult);
 
   resultMomentsList.addEventListener("change", (event) => {
@@ -865,32 +958,68 @@
     applyMomentSelection(input.value);
   });
 
+  downloadLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!window.AURA_RECORD || downloadLink.disabled) return;
+    const rec = window.AURA_RECORD.getState();
+    let blob = rec.blob;
+    if (!blob && rec.url) {
+      try {
+        blob = await (await fetch(rec.url)).blob();
+      } catch (err) {
+        blob = null;
+      }
+    }
+    if (!blob) {
+      setSaveStatus("enregistrement impossible", downloadLink);
+      return;
+    }
+    await saveFiles(
+      [
+        {
+          blob,
+          name: window.AURA_RECORD.fileName(appState.creation.name),
+        },
+      ],
+      downloadLink
+    );
+  });
+
   btnDownloadImage.addEventListener("click", async (event) => {
     event.stopPropagation();
-    if (!window.AURA_SIGNATURE) return;
+    if (!window.AURA_SIGNATURE || btnDownloadImage.disabled) return;
     try {
       const blob = await window.AURA_SIGNATURE.exportPngBlob();
       if (!blob) return;
-      triggerDownload(blob, window.AURA_SIGNATURE.imageFileName(appState.creation.name));
+      await saveFiles(
+        [
+          {
+            blob,
+            name: window.AURA_SIGNATURE.imageFileName(appState.creation.name),
+          },
+        ],
+        btnDownloadImage
+      );
     } catch (err) {
-      /* keep the result usable */
+      setSaveStatus("enregistrement impossible", btnDownloadImage);
     }
   });
 
   btnDownloadMoments.addEventListener("click", async (event) => {
     event.stopPropagation();
-    if (!window.AURA_SIGNATURE) return;
+    if (!window.AURA_SIGNATURE || btnDownloadMoments.disabled) return;
     try {
       const files = await window.AURA_SIGNATURE.exportAllPngBlobs();
-      for (let i = 0; i < files.length; i += 1) {
-        triggerDownload(
-          files[i].blob,
-          window.AURA_SIGNATURE.imageFileName(appState.creation.name, files[i].index)
-        );
-        await new Promise((resolve) => window.setTimeout(resolve, 280));
-      }
+      await saveFiles(
+        files.map((file) => ({
+          blob: file.blob,
+          name: window.AURA_SIGNATURE.imageFileName(appState.creation.name, file.index),
+        })),
+        btnDownloadMoments
+      );
     } catch (err) {
-      /* keep the result usable */
+      setSaveStatus("enregistrement impossible", btnDownloadMoments);
     }
   });
 

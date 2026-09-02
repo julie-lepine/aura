@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">aura</string>
+    <string name="title_activity_main">aura</string>
+    <string name="package_name">com.havefuncorp.aura</string>
+    <string name="custom_url_scheme">com.havefuncorp.aura</string>
+    <string name="admob_app_id">ca-app-pub-6332424645114129~3377348623</string>
+</resources>

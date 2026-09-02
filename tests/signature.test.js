@@ -1,5 +1,5 @@
 const assert = require("assert");
-const signature = require("./signature.js");
+const signature = require("../js/signature.js");
 
 function makeImage(width, height, fill) {
   const data = new Uint8ClampedArray(width * height * 4);

@@ -1,0 +1,8 @@
+{
+  "appId": "com.havefuncorp.aura",
+  "appName": "aura",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

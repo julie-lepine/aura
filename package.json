@@ -1,0 +1,21 @@
+{
+  "name": "aura",
+  "private": true,
+  "scripts": {
+    "test": "node tests/signature.test.js",
+    "icon": "node scripts/makeAppIcon.mjs",
+    "assets:sync": "node scripts/makeAppIcon.mjs",
+    "cap:sync-web": "node scripts/syncCapWeb.mjs",
+    "cap:sync": "npm run cap:sync-web && npx cap sync && node scripts/patchNative.mjs",
+    "cap:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.0.0",
+    "@capacitor-community/media": "^9.1.0",
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/filesystem": "^8.1.3",
+    "@capacitor/share": "^8.0.1"
+  }
+}
