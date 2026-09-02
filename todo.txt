@@ -5,15 +5,15 @@ Compte et légal
 [x] unité interstitial aura-visu créée (id prod, pas encore dans l’app)
 [x] politique de confidentialité en ligne
     https://revealthepartygame.fr/aura.html
-[ ] url dans admob : Confidentialité et messages → message UE/RGPD (pas les paramètres de l’app)
-[ ] fiche play : pub, données, tracking + même url privacy
+[x] url dans admob : Confidentialité et messages → message UE/RGPD (pas les paramètres de l’app)
+[x] fiche play : pub, données, tracking + même url privacy — envoyée, en examen
 
 Consentement
 [x] réécrire l’écran cookies pour la pub réelle
 [x] accepter / refuser : les deux laissent l’app marcher
 [x] refuser = pas de pub, donc pas de tracking
 [x] le refus n’empêche jamais de voir le résultat
-[ ] eee : message ump/admob (confidentialité et messages) — le code est prêt, le formulaire google manque encore
+[x] eee : message ump/admob (confidentialité et messages) — publié, lié à aura
 
 Parcours
 [x] une pub par aura terminée, au tap « télécharger mon aura », avant la page téléchargements
@@ -34,8 +34,8 @@ Technique
 [ ] plafond si enchaînement trop rapide d’auras (plus tard)
 
 Reco
-[ ] build apk/aab de test
-[ ] play internal testing, téléphone android réel
+[x] build apk/aab de test — aab envoyé, groupe de testeurs créé
+[ ] play internal testing, téléphone android réel — après feu vert play
 [ ] vérifier le flow stop → pub → résultat
 [ ] vérifier le flow sans pub (refus, no fill)
 [ ] reco play + admob
