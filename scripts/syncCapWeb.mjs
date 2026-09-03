@@ -40,4 +40,5 @@ fs.mkdirSync(www, { recursive: true });
 for (const file of files) copyFile(file);
 copyDir("js");
 copyDir("assets");
+copyDir("sons");
 console.log("www/ synchronisé");

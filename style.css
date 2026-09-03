@@ -176,6 +176,46 @@ body.is-create #stage {
   overflow: visible;
 }
 
+.sound-toggle {
+  appearance: none;
+  position: absolute;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 12px;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.sound-toggle img {
+  display: block;
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 8px rgba(220, 201, 239, 0.32));
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+}
+
+.sound-toggle:active img {
+  transform: scale(0.9);
+}
+
+.sound-toggle.is-off img {
+  opacity: 0.28;
+  filter: grayscale(1);
+}
+
+.sound-toggle:focus-visible {
+  outline: 1px solid rgba(220, 201, 239, 0.75);
+  outline-offset: -4px;
+}
+
 h1 {
   font-size: 26px;
   font-weight: 500;

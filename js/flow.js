@@ -41,6 +41,7 @@
   const screens = document.querySelectorAll(".screen[data-screen]");
   const createBar = document.getElementById("create-controls");
   const btnBackConfig = document.getElementById("btn-back-config");
+  const btnSoundToggle = document.getElementById("btn-sound-toggle");
   const btnPlay = document.getElementById("btn-play");
   const btnPause = document.getElementById("btn-pause");
   const btnStop = document.getElementById("btn-stop");
@@ -126,6 +127,17 @@
 
   function recordStatus() {
     return window.AURA_RECORD ? window.AURA_RECORD.getState().status : "idle";
+  }
+
+  function syncSoundToggle() {
+    if (!btnSoundToggle || !window.AURA_AUDIO) return;
+    const enabled = window.AURA_AUDIO.isEnabled();
+    btnSoundToggle.classList.toggle("is-off", !enabled);
+    btnSoundToggle.setAttribute("aria-pressed", String(enabled));
+    btnSoundToggle.setAttribute(
+      "aria-label",
+      enabled ? "désactiver la musique" : "activer la musique"
+    );
   }
 
   function closePauseEdit() {
@@ -404,6 +416,10 @@
     const silent = options && options.silent;
     if (from === screen && !(options && options.force)) return;
 
+    if (from === APP_SCREENS.CREATE && screen !== APP_SCREENS.CREATE) {
+      if (window.AURA_AUDIO) window.AURA_AUDIO.stop();
+    }
+
     if (from === APP_SCREENS.RESULT && screen !== APP_SCREENS.RESULT) {
       pauseResultVideo();
       setResultPhase("");
@@ -521,6 +537,9 @@
     }
     if (window.AURA_RECORD) window.AURA_RECORD.cleanup();
     resetSignature();
+    if (window.AURA_AUDIO) {
+      window.AURA_AUDIO.play(appState.auraConfig.glow, appState.auraConfig.mood);
+    }
     updateViewportMode();
   }
 
@@ -904,6 +923,13 @@
 
   document.getElementById("btn-create").addEventListener("click", enterCreate);
 
+  btnSoundToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (!window.AURA_AUDIO) return;
+    window.AURA_AUDIO.setEnabled(!window.AURA_AUDIO.isEnabled());
+    syncSoundToggle();
+  });
+
   btnBackConfig.addEventListener("click", (event) => {
     event.stopPropagation();
     leaveCreateToConfig();
@@ -918,6 +944,9 @@
       if (status === "paused") {
         window.AURA_RECORD.resume();
         if (window.AURA_SIGNATURE) window.AURA_SIGNATURE.resume();
+        if (window.AURA_AUDIO) {
+          window.AURA_AUDIO.play(appState.auraConfig.glow, appState.auraConfig.mood);
+        }
       } else {
         window.AURA_RECORD.start();
         if (window.AURA_SIGNATURE) window.AURA_SIGNATURE.start();
@@ -1051,6 +1080,7 @@
   renderPauseGlowCards();
   renderPausePaletteCards();
   renderMoodCards();
+  syncSoundToggle();
   tryLockPortrait();
   updateViewportMode();
   history.replaceState({ screen: APP_SCREENS.HOME }, "", "#");
@@ -1062,5 +1092,13 @@
   window.addEventListener("orientationchange", () => {
     tryLockPortrait();
     updateViewportMode();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (!window.AURA_AUDIO || appState.screen !== APP_SCREENS.CREATE) return;
+    if (document.hidden) {
+      window.AURA_AUDIO.pause();
+    } else {
+      window.AURA_AUDIO.play(appState.auraConfig.glow, appState.auraConfig.mood);
+    }
   });
 })();
