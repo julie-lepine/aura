@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Charte graphique — aura</title>
+    <style>
+      :root {
+        --night: #07070c;
+        --paper: #ece8f2;
+        --rose: #f4c9d6;
+        --lavender: #dcc9ef;
+        --ink: #1a1218;
+        --muted: rgba(236, 232, 242, 0.62);
+        --quiet: rgba(236, 232, 242, 0.42);
+        --line: rgba(244, 201, 214, 0.16);
+        --panel: rgba(255, 255, 255, 0.03);
+        --selected: rgba(244, 201, 214, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: #24232a;
+        color: var(--paper);
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+
+      .page {
+        position: relative;
+        width: 297mm;
+        height: 210mm;
+        padding: 18mm 20mm 15mm;
+        overflow: hidden;
+        background: var(--night);
+        page-break-after: always;
+        break-after: page;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .page:last-child {
+        page-break-after: auto;
+      }
+
+      .page::after {
+        content: attr(data-page);
+        position: absolute;
+        right: 20mm;
+        bottom: 8mm;
+        color: var(--quiet);
+        font-size: 8pt;
+        letter-spacing: 0.14em;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h2 {
+        font-size: 24pt;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: lowercase;
+      }
+
+      h3 {
+        color: var(--paper);
+        font-size: 11pt;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: lowercase;
+      }
+
+      p,
+      li {
+        font-size: 10.5pt;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+
+      ul {
+        margin: 3mm 0 0;
+        padding-left: 5mm;
+      }
+
+      li + li {
+        margin-top: 1.5mm;
+      }
+
+      .eyebrow {
+        margin-bottom: 4mm;
+        color: var(--quiet);
+        font-size: 8pt;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: lowercase;
+      }
+
+      .intro {
+        max-width: 168mm;
+        margin-top: 3mm;
+        font-size: 12pt;
+      }
+
+      .rule {
+        height: 1px;
+        margin: 7mm 0;
+        background: var(--line);
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10mm;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7mm;
+      }
+
+      .note {
+        color: var(--quiet);
+        font-size: 8.5pt;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 1.5mm 3mm;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 8pt;
+        letter-spacing: 0.08em;
+      }
+
+      /* couverture */
+      .cover {
+        display: flex;
+        align-items: center;
+        padding-left: 26mm;
+      }
+
+      .cover::before {
+        content: "";
+        position: absolute;
+        width: 155mm;
+        height: 155mm;
+        right: -8mm;
+        top: 26mm;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 44% 50%, rgba(244, 201, 214, 0.28), rgba(220, 201, 239, 0.12) 38%, transparent 70%);
+      }
+
+      .cover-logo {
+        width: 115mm;
+        height: auto;
+      }
+
+      .cover h1 {
+        margin-top: 11mm;
+        font-size: 18pt;
+        font-weight: 400;
+        letter-spacing: 0.15em;
+        text-transform: lowercase;
+      }
+
+      .cover-meta {
+        margin-top: 5mm;
+        color: var(--quiet);
+        font-size: 9pt;
+        letter-spacing: 0.12em;
+      }
+
+      .cover-mark {
+        position: absolute;
+        right: 28mm;
+        bottom: 18mm;
+        width: 28mm;
+        height: 28mm;
+        border-radius: 7mm;
+        object-fit: cover;
+      }
+
+      /* logo */
+      .logo-stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 55mm;
+        margin-top: 7mm;
+        border: 1px solid var(--line);
+        border-radius: 7mm;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .logo-stage img {
+        width: 105mm;
+      }
+
+      .logo-clearspace {
+        position: relative;
+        width: 85mm;
+        height: 45mm;
+        display: grid;
+        place-items: center;
+        border: 1px dashed rgba(220, 201, 239, 0.45);
+      }
+
+      .logo-clearspace::before,
+      .logo-clearspace::after {
+        content: "a";
+        position: absolute;
+        color: var(--quiet);
+        font-size: 8pt;
+      }
+
+      .logo-clearspace::before {
+        left: 2mm;
+        top: 50%;
+      }
+
+      .logo-clearspace::after {
+        right: 2mm;
+        top: 50%;
+      }
+
+      .logo-clearspace img {
+        width: 62mm;
+      }
+
+      .logo-rules {
+        margin-top: 8mm;
+        align-items: center;
+      }
+
+      .dos-donts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5mm;
+        margin-top: 4mm;
+      }
+
+      .mini-rule {
+        min-height: 25mm;
+        padding: 4mm;
+        border: 1px solid var(--line);
+        border-radius: 4mm;
+      }
+
+      .mini-rule strong {
+        display: block;
+        margin-bottom: 2mm;
+        color: var(--paper);
+        font-size: 9pt;
+        font-weight: 600;
+      }
+
+      /* couleurs */
+      .brand-colors {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr 1fr 0.8fr;
+        gap: 4mm;
+        margin-top: 9mm;
+      }
+
+      .color-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 5mm;
+      }
+
+      .color-fill {
+        height: 36mm;
+      }
+
+      .color-info {
+        padding: 4mm;
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .color-info strong {
+        display: block;
+        color: var(--paper);
+        font-size: 10pt;
+        font-weight: 500;
+        text-transform: lowercase;
+      }
+
+      .color-info span {
+        color: var(--quiet);
+        font-size: 8pt;
+        letter-spacing: 0.08em;
+      }
+
+      .alpha-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4mm;
+        margin-top: 8mm;
+      }
+
+      .alpha-sample {
+        padding: 4mm;
+        border-radius: 4mm;
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .alpha-sample b {
+        display: block;
+        font-size: 14pt;
+        font-weight: 500;
+      }
+
+      .alpha-sample small {
+        color: var(--quiet);
+        font-size: 8pt;
+      }
+
+      /* palettes */
+      .palette-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5mm 8mm;
+        margin-top: 7mm;
+      }
+
+      .palette {
+        display: grid;
+        grid-template-columns: 26mm 1fr;
+        align-items: center;
+        gap: 4mm;
+      }
+
+      .palette-name {
+        font-size: 9pt;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: lowercase;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        overflow: hidden;
+        height: 18mm;
+        border-radius: 4mm;
+      }
+
+      .swatches i {
+        position: relative;
+        display: block;
+      }
+
+      .swatches i::after {
+        content: attr(data-hex);
+        position: absolute;
+        left: 50%;
+        bottom: 1.5mm;
+        transform: translateX(-50%) rotate(-90deg);
+        color: rgba(7, 7, 12, 0.72);
+        font-size: 4.5pt;
+        font-style: normal;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      /* typographie */
+      .type-hero {
+        margin-top: 8mm;
+        font-size: 40pt;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: lowercase;
+      }
+
+      .type-specimens {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 14mm;
+        margin-top: 6mm;
+      }
+
+      .specimen {
+        padding: 6mm;
+        border-top: 1px solid var(--line);
+      }
+
+      .specimen-title {
+        font-size: 20pt;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: lowercase;
+      }
+
+      .specimen-section {
+        margin-top: 5mm;
+        color: var(--quiet);
+        font-size: 11pt;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: lowercase;
+      }
+
+      .specimen-body {
+        margin-top: 5mm;
+        color: var(--muted);
+        font-size: 12pt;
+        line-height: 1.55;
+      }
+
+      .type-table {
+        display: grid;
+        grid-template-columns: 28mm 1fr;
+        gap: 3mm 6mm;
+        margin-top: 5mm;
+      }
+
+      .type-table dt {
+        color: var(--quiet);
+        font-size: 8pt;
+        letter-spacing: 0.12em;
+        text-transform: lowercase;
+      }
+
+      .type-table dd {
+        margin: 0;
+        color: var(--muted);
+        font-size: 9pt;
+      }
+
+      /* composants */
+      .component-stage {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 12mm;
+        margin-top: 8mm;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 5mm;
+        align-items: center;
+        margin: 6mm 0 10mm;
+      }
+
+      .btn {
+        min-width: 54mm;
+        padding: 4mm 7mm;
+        border: 0;
+        border-radius: 999px;
+        font: inherit;
+        font-size: 9pt;
+        letter-spacing: 0.04em;
+        text-align: center;
+      }
+
+      .btn-primary {
+        color: var(--ink);
+        background: linear-gradient(90deg, var(--rose), var(--lavender));
+      }
+
+      .btn-ghost {
+        color: rgba(236, 232, 242, 0.7);
+        border: 1px solid var(--line);
+        background: transparent;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4mm;
+        margin-top: 5mm;
+      }
+
+      .choice {
+        min-height: 29mm;
+        padding: 5mm 3mm;
+        border: 1px solid var(--line);
+        border-radius: 5mm;
+        background: var(--panel);
+        text-align: center;
+      }
+
+      .choice.selected {
+        border-color: rgba(220, 201, 239, 0.7);
+        background: var(--selected);
+      }
+
+      .choice b {
+        display: block;
+        color: rgba(236, 232, 242, 0.78);
+        font-size: 9pt;
+        font-weight: 500;
+      }
+
+      .choice span {
+        display: block;
+        margin-top: 2mm;
+        color: var(--quiet);
+        font-size: 7pt;
+      }
+
+      .radius-set {
+        display: flex;
+        align-items: end;
+        gap: 5mm;
+        margin-top: 7mm;
+      }
+
+      .radius {
+        display: grid;
+        place-items: center;
+        width: 28mm;
+        height: 22mm;
+        border: 1px solid rgba(220, 201, 239, 0.55);
+        color: var(--quiet);
+        font-size: 7pt;
+      }
+
+      /* iconographie */
+      .icons {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6mm;
+        margin-top: 8mm;
+      }
+
+      .icon-item {
+        min-height: 47mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 6mm;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .icon-item img {
+        width: 24mm;
+        height: 24mm;
+        object-fit: contain;
+      }
+
+      .icon-item.music img {
+        width: 16mm;
+        height: 16mm;
+      }
+
+      .icon-item span {
+        margin-top: 3mm;
+        color: var(--quiet);
+        font-size: 8pt;
+        letter-spacing: 0.1em;
+      }
+
+      .visual-language {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6mm;
+        margin-top: 9mm;
+      }
+
+      .visual-sample {
+        height: 34mm;
+        border-radius: 7mm;
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: end;
+        padding: 4mm;
+      }
+
+      .visual-sample span {
+        color: rgba(236, 232, 242, 0.72);
+        font-size: 8pt;
+        letter-spacing: 0.12em;
+      }
+
+      /* voix */
+      .voice {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 14mm;
+        margin-top: 8mm;
+      }
+
+      .voice-words {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3mm;
+        margin-top: 5mm;
+      }
+
+      .copy-examples {
+        display: grid;
+        gap: 4mm;
+        margin-top: 5mm;
+      }
+
+      .copy-line {
+        padding: 4mm 5mm;
+        border-left: 2px solid var(--lavender);
+        background: rgba(255, 255, 255, 0.025);
+        color: var(--paper);
+        font-size: 12pt;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+      }
+
+      .checklist {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5mm;
+        margin-top: 9mm;
+      }
+
+      .check {
+        min-height: 34mm;
+        padding: 5mm;
+        border-top: 1px solid var(--line);
+      }
+
+      .check b {
+        display: block;
+        margin-bottom: 2mm;
+        color: var(--paper);
+        font-size: 9pt;
+        font-weight: 600;
+        text-transform: lowercase;
+      }
+
+      .check span {
+        color: var(--quiet);
+        font-size: 8pt;
+        line-height: 1.45;
+      }
+
+      /* synthèse */
+      .final {
+        display: flex;
+        align-items: center;
+      }
+
+      .final-inner {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 0.95fr;
+        gap: 18mm;
+        align-items: center;
+      }
+
+      .final-logo {
+        width: 100mm;
+        margin-bottom: 12mm;
+      }
+
+      .principles {
+        display: grid;
+        gap: 5mm;
+      }
+
+      .principle {
+        display: grid;
+        grid-template-columns: 10mm 1fr;
+        gap: 3mm;
+        align-items: start;
+      }
+
+      .principle b {
+        color: var(--rose);
+        font-size: 11pt;
+        font-weight: 500;
+      }
+
+      .principle strong {
+        display: block;
+        color: var(--paper);
+        font-size: 10pt;
+        font-weight: 600;
+        text-transform: lowercase;
+      }
+
+      .principle span {
+        color: var(--quiet);
+        font-size: 8.5pt;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="page cover" id="page-01" data-page="01">
+      <div>
+        <p class="eyebrow">identité visuelle · septembre 2026</p>
+        <img class="cover-logo" src="../assets/aura_logo.svg" alt="aura" />
+        <h1>charte graphique</h1>
+        <p class="cover-meta">référence digitale · interface mobile · communication</p>
+      </div>
+      <img class="cover-mark" src="../assets/icon.png" alt="" />
+    </section>
+
+    <section class="page" id="page-02" data-page="02">
+      <p class="eyebrow">01 · identité</p>
+      <h2>le logotype</h2>
+      <p class="intro">
+        Le logo aura est doux, arrondi et entièrement en bas-de-casse. Son dégradé rose–lavande
+        porte l’identité de marque sur le fond nocturne de l’expérience.
+      </p>
+      <div class="logo-stage">
+        <img src="../assets/aura_logo.svg" alt="aura" />
+      </div>
+      <div class="grid-2 logo-rules">
+        <div>
+          <h3>zone de protection</h3>
+          <div style="display:flex; gap:6mm; align-items:center; margin-top:4mm">
+            <div class="logo-clearspace">
+              <img src="../assets/aura_logo.svg" alt="aura" />
+            </div>
+            <p class="note">Conserver autour du logo un espace libre au moins égal à la hauteur du « a ».</p>
+          </div>
+        </div>
+        <div>
+          <h3>règles d’usage</h3>
+          <div class="dos-donts">
+            <div class="mini-rule">
+              <strong>à faire</strong>
+              <p class="note">Utiliser le fichier vectoriel fourni. Préserver ses proportions et son dégradé.</p>
+            </div>
+            <div class="mini-rule">
+              <strong>à éviter</strong>
+              <p class="note">Ne pas étirer, recolorer, ajouter de contour ou poser sur un fond trop chargé.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-03" data-page="03">
+      <p class="eyebrow">02 · système coloriel</p>
+      <h2>couleurs de marque</h2>
+      <p class="intro">
+        La base est presque noire. Le texte reste légèrement teinté, tandis que le rose et la lavande
+        signent les actions, les contours actifs et les lumières.
+      </p>
+      <div class="brand-colors">
+        <div class="color-card">
+          <div class="color-fill" style="background:#07070c"></div>
+          <div class="color-info"><strong>nuit</strong><span>#07070C · fond</span></div>
+        </div>
+        <div class="color-card">
+          <div class="color-fill" style="background:#ece8f2"></div>
+          <div class="color-info"><strong>brume</strong><span>#ECE8F2 · texte</span></div>
+        </div>
+        <div class="color-card">
+          <div class="color-fill" style="background:#f4c9d6"></div>
+          <div class="color-info"><strong>rose</strong><span>#F4C9D6 · accent</span></div>
+        </div>
+        <div class="color-card">
+          <div class="color-fill" style="background:#dcc9ef"></div>
+          <div class="color-info"><strong>lavande</strong><span>#DCC9EF · accent</span></div>
+        </div>
+        <div class="color-card">
+          <div class="color-fill" style="background:#1a1218"></div>
+          <div class="color-info"><strong>encre</strong><span>#1A1218 · sur accent</span></div>
+        </div>
+      </div>
+      <div class="alpha-row">
+        <div class="alpha-sample"><b style="color:rgba(236,232,242,1)">100 %</b><small>titres et informations essentielles</small></div>
+        <div class="alpha-sample"><b style="color:rgba(236,232,242,.78)">78 %</b><small>libellés et éléments actifs</small></div>
+        <div class="alpha-sample"><b style="color:rgba(236,232,242,.62)">62 %</b><small>texte courant et indications</small></div>
+        <div class="alpha-sample"><b style="color:rgba(236,232,242,.42)">42 %</b><small>métadonnées et hiérarchie secondaire</small></div>
+      </div>
+      <p class="note" style="margin-top:5mm">Dégradé signature : #F4C9D6 → #DCC9EF, horizontal pour les boutons et le logo.</p>
+    </section>
+
+    <section class="page" id="page-04" data-page="04">
+      <p class="eyebrow">03 · univers chromatiques</p>
+      <h2>les huit palettes aura</h2>
+      <p class="intro">Chaque palette rassemble six tons destinés au moteur visuel. Leur ordre fait partie de la combinaison.</p>
+      <div class="palette-grid">
+        <div class="palette"><span class="palette-name">éclat</span><div class="swatches"><i data-hex="#A840FF" style="background:#a840ff"></i><i data-hex="#FF3AA8" style="background:#ff3aa8"></i><i data-hex="#20A8FF" style="background:#20a8ff"></i><i data-hex="#FF6C4E" style="background:#ff6c4e"></i><i data-hex="#24E89E" style="background:#24e89e"></i><i data-hex="#FFCE30" style="background:#ffce30"></i></div></div>
+        <div class="palette"><span class="palette-name">aube</span><div class="swatches"><i data-hex="#FF4884" style="background:#ff4884"></i><i data-hex="#FF7656" style="background:#ff7656"></i><i data-hex="#FFB040" style="background:#ffb040"></i><i data-hex="#FF40B0" style="background:#ff40b0"></i><i data-hex="#FF946C" style="background:#ff946c"></i><i data-hex="#F05860" style="background:#f05860"></i></div></div>
+        <div class="palette"><span class="palette-name">marée</span><div class="swatches"><i data-hex="#2484FF" style="background:#2484ff"></i><i data-hex="#00C4E8" style="background:#00c4e8"></i><i data-hex="#5868FF" style="background:#5868ff"></i><i data-hex="#18D8C4" style="background:#18d8c4"></i><i data-hex="#8450FF" style="background:#8450ff"></i><i data-hex="#10ACFF" style="background:#10acff"></i></div></div>
+        <div class="palette"><span class="palette-name">jardin</span><div class="swatches"><i data-hex="#1CD884" style="background:#1cd884"></i><i data-hex="#9CE430" style="background:#9ce430"></i><i data-hex="#10C4B0" style="background:#10c4b0"></i><i data-hex="#58FF9C" style="background:#58ff9c"></i><i data-hex="#BCDC24" style="background:#bcdc24"></i><i data-hex="#30BC70" style="background:#30bc70"></i></div></div>
+        <div class="palette"><span class="palette-name">lune</span><div class="swatches"><i data-hex="#B0C4FF" style="background:#b0c4ff"></i><i data-hex="#849CE8" style="background:#849ce8"></i><i data-hex="#DCE4FF" style="background:#dce4ff"></i><i data-hex="#A890FF" style="background:#a890ff"></i><i data-hex="#60A8FF" style="background:#60a8ff"></i><i data-hex="#C8BCF0" style="background:#c8bcf0"></i></div></div>
+        <div class="palette"><span class="palette-name">braise</span><div class="swatches"><i data-hex="#FF3830" style="background:#ff3830"></i><i data-hex="#FF7424" style="background:#ff7424"></i><i data-hex="#FFB030" style="background:#ffb030"></i><i data-hex="#C42434" style="background:#c42434"></i><i data-hex="#FF5C40" style="background:#ff5c40"></i><i data-hex="#E88C20" style="background:#e88c20"></i></div></div>
+        <div class="palette"><span class="palette-name">nacre</span><div class="swatches"><i data-hex="#FFB0C4" style="background:#ffb0c4"></i><i data-hex="#FFD4B0" style="background:#ffd4b0"></i><i data-hex="#B0E8D0" style="background:#b0e8d0"></i><i data-hex="#D4B8FF" style="background:#d4b8ff"></i><i data-hex="#FFE4C4" style="background:#ffe4c4"></i><i data-hex="#BAD4FF" style="background:#bad4ff"></i></div></div>
+        <div class="palette"><span class="palette-name">nuit</span><div class="swatches"><i data-hex="#5840FF" style="background:#5840ff"></i><i data-hex="#3020B0" style="background:#3020b0"></i><i data-hex="#2094FF" style="background:#2094ff"></i><i data-hex="#A830FF" style="background:#a830ff"></i><i data-hex="#18D4E8" style="background:#18d4e8"></i><i data-hex="#7048FF" style="background:#7048ff"></i></div></div>
+      </div>
+      <p class="note" style="margin-top:6mm">Les palettes expressives complètent les couleurs de marque ; elles ne remplacent pas le fond, le texte ou les accents d’interface.</p>
+    </section>
+
+    <section class="page" id="page-05" data-page="05">
+      <p class="eyebrow">04 · typographie</p>
+      <h2>une voix douce et directe</h2>
+      <div class="type-hero">créer mon aura</div>
+      <div class="type-specimens">
+        <div class="specimen">
+          <p class="eyebrow">interface · segoe ui / helvetica neue</p>
+          <div class="specimen-title">ton aura</div>
+          <div class="specimen-section">ambiance</div>
+          <p class="specimen-body">choisis ton ambiance.<br />laisse-toi porter.</p>
+        </div>
+        <div class="specimen">
+          <h3>hiérarchie recommandée</h3>
+          <dl class="type-table">
+            <dt>titre</dt><dd>26 px · medium 500 · approche 0,08 em</dd>
+            <dt>section</dt><dd>11–16 px · semibold 600 · approche 0,18 à 0,28 em</dd>
+            <dt>texte</dt><dd>16 px · regular 400 · interligne 1,55</dd>
+            <dt>libellé</dt><dd>14 px · regular · approche 0,06 em</dd>
+            <dt>métadonnée</dt><dd>10–13 px · approche 0,12 à 0,22 em</dd>
+          </dl>
+          <div class="rule"></div>
+          <h3>logo</h3>
+          <p class="note" style="margin-top:3mm">Le dessin du logo est issu de Comfortaa SemiBold. Toujours employer le fichier SVG, jamais une recomposition typographique.</p>
+        </div>
+      </div>
+      <div style="margin-top:7mm">
+        <span class="tag">bas-de-casse</span>
+        <span class="tag">approche généreuse</span>
+        <span class="tag">peu de graisse</span>
+        <span class="tag">phrases courtes</span>
+      </div>
+    </section>
+
+    <section class="page" id="page-06" data-page="06">
+      <p class="eyebrow">05 · interface</p>
+      <h2>composants et géométrie</h2>
+      <div class="component-stage">
+        <div>
+          <h3>actions</h3>
+          <div class="button-row">
+            <div class="btn btn-primary">créer mon aura</div>
+            <div class="btn btn-ghost">nouvelle aura</div>
+          </div>
+          <h3>cartes de sélection</h3>
+          <div class="cards">
+            <div class="choice"><b>calme</b><span>prends ton temps.</span></div>
+            <div class="choice selected"><b>flot</b><span>laisse-toi porter.</span></div>
+            <div class="choice"><b>vive</b><span>laisse l’énergie monter.</span></div>
+          </div>
+        </div>
+        <div>
+          <h3>principes de forme</h3>
+          <p style="margin-top:4mm">Les formes sont généreusement arrondies. Les contours restent fins et translucides ; l’état actif gagne en lumière sans devenir opaque.</p>
+          <div class="radius-set">
+            <div class="radius" style="border-radius:14px">14 px</div>
+            <div class="radius" style="border-radius:18px">18 px</div>
+            <div class="radius" style="border-radius:20px">20 px</div>
+            <div class="radius" style="border-radius:999px">pilule</div>
+          </div>
+          <div class="rule"></div>
+          <h3>états</h3>
+          <ul>
+            <li>Repos : fond blanc à 3 %, contour rose à 16 %.</li>
+            <li>Sélection : fond rose à 8 %, contour lavande à 70 %.</li>
+            <li>Action principale : dégradé signature et texte encre.</li>
+            <li>Cible tactile : conserver au minimum 44 × 44 px.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-07" data-page="07">
+      <p class="eyebrow">06 · iconographie et matière</p>
+      <h2>signes simples, lumière diffuse</h2>
+      <div class="icons">
+        <div class="icon-item"><img src="../assets/aura_play.svg" alt="" /><span>lecture</span></div>
+        <div class="icon-item"><img src="../assets/aura_pause.svg" alt="" /><span>pause</span></div>
+        <div class="icon-item"><img src="../assets/aura_stop.svg" alt="" /><span>arrêt</span></div>
+        <div class="icon-item"><img src="../assets/aura_frame.svg" alt="" /><span>cadre</span></div>
+        <div class="icon-item music"><img src="../assets/musical-note.png" alt="" /><span>musique</span></div>
+      </div>
+      <div class="visual-language">
+        <div class="visual-sample" style="background:radial-gradient(circle at 50% 45%,rgba(244,201,214,.44),rgba(220,201,239,.14) 38%,transparent 72%)"><span>halo doux</span></div>
+        <div class="visual-sample" style="background:radial-gradient(circle at 35% 50%,rgba(168,64,255,.45),transparent 40%),radial-gradient(circle at 68% 48%,rgba(255,58,168,.4),transparent 42%)"><span>couleurs en fusion</span></div>
+        <div class="visual-sample" style="background:linear-gradient(90deg,rgba(244,201,214,.08),rgba(220,201,239,.18),rgba(244,201,214,.04))"><span>transparence</span></div>
+      </div>
+      <p class="note" style="margin-top:5mm">Les pictogrammes utilisent le dégradé signature, des angles adoucis et des masses simples. Ils restent lisibles sans contour superflu.</p>
+    </section>
+
+    <section class="page" id="page-08" data-page="08">
+      <p class="eyebrow">07 · ton de marque</p>
+      <h2>écrire comme aura</h2>
+      <div class="voice">
+        <div>
+          <h3>caractère</h3>
+          <div class="voice-words">
+            <span class="tag">intime</span>
+            <span class="tag">sensoriel</span>
+            <span class="tag">apaisé</span>
+            <span class="tag">direct</span>
+            <span class="tag">poétique</span>
+            <span class="tag">inclusif</span>
+          </div>
+          <div class="rule"></div>
+          <p>Privilégier le tutoiement, les verbes d’action et les formulations brèves. Employer la bas-de-casse dans l’interface. Éviter le jargon technique, les injonctions sèches et la ponctuation excessive.</p>
+        </div>
+        <div>
+          <h3>exemples</h3>
+          <div class="copy-examples">
+            <div class="copy-line">créer une aura</div>
+            <div class="copy-line">choisis ton ambiance.</div>
+            <div class="copy-line">prends ton temps.</div>
+            <div class="copy-line">laisse l’énergie monter.</div>
+          </div>
+        </div>
+      </div>
+      <div class="checklist">
+        <div class="check"><b>contraste</b><span>Texte clair sur fond nuit. Réserver les faibles opacités au contenu secondaire.</span></div>
+        <div class="check"><b>respiration</b><span>Laisser de l’espace autour du logo, des titres et des actions principales.</span></div>
+        <div class="check"><b>cohérence</b><span>Employer les assets fournis et les valeurs du système plutôt que des variantes proches.</span></div>
+        <div class="check"><b>mouvement</b><span>Transitions lentes et fluides ; éviter les ruptures brusques ou décoratives.</span></div>
+      </div>
+    </section>
+
+    <section class="page final" id="page-09" data-page="09">
+      <div class="final-inner">
+        <div>
+          <img class="final-logo" src="../assets/aura_logo.svg" alt="aura" />
+          <h2>l’essentiel</h2>
+          <p class="intro">Une expérience nocturne, vivante et personnelle où la lumière répond au geste.</p>
+        </div>
+        <div class="principles">
+          <div class="principle"><b>01</b><div><strong>laisser respirer</strong><span>Peu d’éléments, beaucoup d’espace et une hiérarchie calme.</span></div></div>
+          <div class="principle"><b>02</b><div><strong>faire émerger la lumière</strong><span>Fond nuit constant, accents pastel et couleurs expressives.</span></div></div>
+          <div class="principle"><b>03</b><div><strong>rester doux</strong><span>Angles arrondis, transparences, mouvement fluide et langage direct.</span></div></div>
+          <div class="principle"><b>04</b><div><strong>préserver le système</strong><span>Logo vectoriel, couleurs exactes, typographie et composants cohérents.</span></div></div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
