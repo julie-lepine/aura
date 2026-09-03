@@ -3,8 +3,8 @@
 
   const TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712";
   const SHOW_TIMEOUT_MS = 12000;
-  const PREPARE_WAIT_MS = 4000;
-  const CONSENT_INFO_TIMEOUT_MS = 6000;
+  const PREPARE_WAIT_MS = 8000;
+  const CONSENT_INFO_TIMEOUT_MS = 8000;
   const InterstitialAdPluginEvents = {
     Loaded: "interstitialAdLoaded",
     FailedToLoad: "interstitialAdFailedToLoad",
@@ -20,7 +20,7 @@
   let interstitialReady = false;
   let preparePromise = null;
   let dismissWaiter = null;
-  let adsAllowed = false;
+  let consentChoice = "";
 
   function isNativeApp() {
     const cap = typeof window !== "undefined" ? window.Capacitor : undefined;
@@ -34,6 +34,8 @@
   function nativePlugin(name) {
     const cap = window.Capacitor;
     if (!cap) return null;
+    const fromRegistry = cap.Plugins && cap.Plugins[name];
+    if (fromRegistry) return fromRegistry;
     try {
       if (typeof cap.registerPlugin === "function") {
         return cap.registerPlugin(name);
@@ -41,7 +43,7 @@
     } catch (err) {
       /* déjà enregistré */
     }
-    return (cap.Plugins && cap.Plugins[name]) || null;
+    return null;
   }
 
   function waitMs(ms) {
@@ -49,11 +51,15 @@
   }
 
   function applyChoice(choice) {
-    adsAllowed = choice === "accepted";
-    if (!adsAllowed) {
-      interstitialReady = false;
-      preparePromise = null;
-    }
+    consentChoice = choice === "accepted" || choice === "refused" ? choice : "";
+  }
+
+  function hasConsentChoice() {
+    return consentChoice === "accepted" || consentChoice === "refused";
+  }
+
+  function useNonPersonalizedAds() {
+    return consentChoice !== "accepted";
   }
 
   function bindListeners(plugin) {
@@ -77,7 +83,7 @@
 
   async function ensureSdk() {
     if (!isNativeApp()) return false;
-    if (initialized) return true;
+    if (initialized && admob) return true;
     if (initPromise) return initPromise;
 
     initPromise = (async () => {
@@ -88,7 +94,11 @@
           return false;
         }
         bindListeners(plugin);
-        await plugin.initialize({ initializeForTesting: true });
+        try {
+          await plugin.initialize();
+        } catch (err) {
+          /* initialize() peut échouer sur le parent banner : le SDK reste utilisable */
+        }
         admob = plugin;
         initialized = true;
         return true;
@@ -104,7 +114,7 @@
   }
 
   async function ensureReady() {
-    if (!adsAllowed) return false;
+    if (!hasConsentChoice()) return false;
     return ensureSdk();
   }
 
@@ -121,21 +131,33 @@
   }
 
   function formIsRequired(info) {
-    return Boolean(
-      info &&
-      info.isConsentFormAvailable &&
-      info.status === "REQUIRED"
-    );
+    const status = info && info.status ? String(info.status).toUpperCase() : "";
+    return Boolean(info && info.isConsentFormAvailable && status === "REQUIRED");
   }
 
   async function showUmpForm() {
     if (!admob || typeof admob.showConsentForm !== "function") {
-      return { adsAllowed: false };
+      return { adsAllowed: hasConsentChoice() };
     }
     const after = await admob.showConsentForm();
-    const allowed = Boolean(after && after.canRequestAds);
-    applyChoice(allowed ? "accepted" : "refused");
-    return { adsAllowed: allowed };
+    return { adsAllowed: Boolean(after && after.canRequestAds), info: after };
+  }
+
+  async function syncUmpIfNeeded() {
+    if (!hasConsentChoice() || !isNativeApp()) {
+      return { adsAllowed: hasConsentChoice() };
+    }
+    if (!(await ensureSdk()) || !admob) return { adsAllowed: true };
+    const info = await requestConsentInfoSafe();
+    if (!info) return { adsAllowed: true };
+    if (formIsRequired(info)) {
+      try {
+        await showUmpForm();
+      } catch (err) {
+        /* garder le choix in-app : refuser = pubs non personnalisées */
+      }
+    }
+    return { adsAllowed: true };
   }
 
   async function resolveLaunchConsent() {
@@ -151,42 +173,36 @@
     }
   }
 
-  async function syncUmpIfNeeded() {
-    if (!adsAllowed || !isNativeApp()) return;
-    if (!(await ensureSdk()) || !admob) return;
-    const info = await requestConsentInfoSafe();
-    if (!formIsRequired(info)) return;
-    try {
-      await showUmpForm();
-    } catch (err) {
-      /* garder le choix in-app si le formulaire UMP échoue */
-    }
-  }
-
   async function preloadInterstitial() {
-    if (!(await ensureReady()) || !admob) return;
+    if (!(await ensureReady()) || !admob) return false;
     interstitialReady = false;
     preparePromise = admob
       .prepareInterstitial({
         adId: TEST_INTERSTITIAL_ID,
         isTesting: true,
+        npa: useNonPersonalizedAds(),
       })
       .then(() => {
         interstitialReady = true;
+        return true;
       })
       .catch(() => {
         interstitialReady = false;
+        return false;
       });
     try {
-      await preparePromise;
+      return await preparePromise;
     } catch (err) {
       interstitialReady = false;
+      return false;
     }
   }
 
   async function showInterstitialAd() {
     if (!(await ensureReady()) || !admob) return;
-    if (preparePromise) {
+    if (!interstitialReady) {
+      await Promise.race([preloadInterstitial(), waitMs(PREPARE_WAIT_MS)]);
+    } else if (preparePromise) {
       await Promise.race([preparePromise, waitMs(PREPARE_WAIT_MS)]);
     }
     if (!interstitialReady) return;
@@ -217,4 +233,6 @@
     preloadInterstitial,
     showInterstitialAd,
   };
+
+  ensureSdk();
 })();

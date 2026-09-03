@@ -488,8 +488,8 @@
       const consent = localStorage.getItem(CONSENT_KEY);
       if (consent === "accepted" || consent === "refused") {
         rememberConsent(consent);
-        if (consent === "accepted" && window.AURA_ADS && typeof window.AURA_ADS.syncUmpIfNeeded === "function") {
-          window.AURA_ADS.syncUmpIfNeeded();
+        if (window.AURA_ADS && typeof window.AURA_ADS.syncUmpIfNeeded === "function") {
+          await window.AURA_ADS.syncUmpIfNeeded();
         }
         go(APP_SCREENS.CONFIG);
         return;
@@ -874,14 +874,32 @@
     afterIntro();
   });
 
-  document.getElementById("btn-accept").addEventListener("click", () => {
-    rememberConsent("accepted");
-    go(APP_SCREENS.CONFIG);
+  document.getElementById("btn-accept").addEventListener("click", async () => {
+    if (appState.busy) return;
+    appState.busy = true;
+    try {
+      rememberConsent("accepted");
+      if (window.AURA_ADS && typeof window.AURA_ADS.syncUmpIfNeeded === "function") {
+        await window.AURA_ADS.syncUmpIfNeeded();
+      }
+      go(APP_SCREENS.CONFIG);
+    } finally {
+      appState.busy = false;
+    }
   });
 
-  document.getElementById("btn-refuse").addEventListener("click", () => {
-    rememberConsent("refused");
-    go(APP_SCREENS.CONFIG);
+  document.getElementById("btn-refuse").addEventListener("click", async () => {
+    if (appState.busy) return;
+    appState.busy = true;
+    try {
+      rememberConsent("refused");
+      if (window.AURA_ADS && typeof window.AURA_ADS.syncUmpIfNeeded === "function") {
+        await window.AURA_ADS.syncUmpIfNeeded();
+      }
+      go(APP_SCREENS.CONFIG);
+    } finally {
+      appState.busy = false;
+    }
   });
 
   document.getElementById("btn-create").addEventListener("click", enterCreate);

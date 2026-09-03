@@ -6,7 +6,7 @@
   // Réglages du feeling — à tweaker en priorité.
   const FEEL = {
     glowAlpha: 0.2,
-    haloMin: 39,
+    haloMin: 60,
     haloMax: 132,
     holdRamp: 1.7,
     stillSpeed: 1.05,
