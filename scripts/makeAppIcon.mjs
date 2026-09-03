@@ -66,7 +66,7 @@ function writePng(filePath, width, height, rgba) {
   fs.writeFileSync(filePath, encodePng(width, height, rgba));
 }
 
-function addGlow(buf, size, cx, cy, radius, rgb, strength) {
+function addGlow(buf, size, cx, cy, radius, rgb, strength, sharpness = 2.15) {
   const r2 = radius * radius;
   for (let y = 0; y < size; y += 1) {
     for (let x = 0; x < size; x += 1) {
@@ -74,7 +74,7 @@ function addGlow(buf, size, cx, cy, radius, rgb, strength) {
       const dy = y + 0.5 - cy;
       const d2 = dx * dx + dy * dy;
       if (d2 > r2 * 4) continue;
-      const falloff = Math.exp((-d2 / r2) * 2.15);
+      const falloff = Math.exp((-d2 / r2) * sharpness);
       const a = falloff * strength;
       if (a < 0.002) continue;
       const i = (y * size + x) * 4;
@@ -92,10 +92,17 @@ function addGlow(buf, size, cx, cy, radius, rgb, strength) {
 function renderGlow(size) {
   const buf = Buffer.alloc(size * size * 4);
   const c = size / 2;
-  addGlow(buf, size, c * 0.9, c * 0.94, size * 0.28, ROSE, 0.72);
-  addGlow(buf, size, c * 1.1, c * 1.04, size * 0.26, LAVENDER, 0.7);
-  addGlow(buf, size, c, c, size * 0.09, CORE, 0.95);
-  addGlow(buf, size, c, c, size * 0.035, [255, 255, 255], 0.85);
+  const mist = [
+    Math.round((ROSE[0] + LAVENDER[0]) / 2),
+    Math.round((ROSE[1] + LAVENDER[1]) / 2),
+    Math.round((ROSE[2] + LAVENDER[2]) / 2),
+  ];
+  addGlow(buf, size, c, c, size * 0.46, mist, 0.22, 1.45);
+  addGlow(buf, size, c * 0.9, c * 0.93, size * 0.34, ROSE, 0.82, 1.85);
+  addGlow(buf, size, c * 1.1, c * 1.07, size * 0.32, LAVENDER, 0.8, 1.85);
+  addGlow(buf, size, c, c, size * 0.16, mist, 0.68, 2.15);
+  addGlow(buf, size, c, c, size * 0.07, CORE, 1, 2.7);
+  addGlow(buf, size, c, c, size * 0.028, [255, 255, 255], 0.9, 3.6);
   return buf;
 }
 

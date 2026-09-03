@@ -1,25 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
   <title>aura</title>
-  <desc>icône dapp : halo pastel rose-lavande sur fond nuit</desc>
+  <desc>icï¿½ne d'app : halo pastel rose-lavande sur fond nuit</desc>
   <defs>
-    <radialGradient id="rose" cx="45%" cy="47%" r="38%">
-      <stop offset="0%" stop-color="#F4C9D6" stop-opacity="0.85"/>
-      <stop offset="42%" stop-color="#F4C9D6" stop-opacity="0.22"/>
-      <stop offset="100%" stop-color="#F4C9D6" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="lavender" cx="55%" cy="53%" r="36%">
-      <stop offset="0%" stop-color="#DCC9EF" stop-opacity="0.8"/>
-      <stop offset="45%" stop-color="#DCC9EF" stop-opacity="0.2"/>
+    <radialGradient id="wash" cx="50%" cy="50%" r="58%">
+      <stop offset="0%" stop-color="#F4C9D6" stop-opacity="0.24"/>
+      <stop offset="55%" stop-color="#DCC9EF" stop-opacity="0.1"/>
       <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="core" cx="50%" cy="50%" r="11%">
-      <stop offset="0%" stop-color="#FFF8FC" stop-opacity="0.95"/>
-      <stop offset="55%" stop-color="#F4C9D6" stop-opacity="0.35"/>
+    <radialGradient id="rose" cx="44%" cy="46%" r="40%">
+      <stop offset="0%" stop-color="#F4C9D6" stop-opacity="0.88"/>
+      <stop offset="42%" stop-color="#F4C9D6" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#F4C9D6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lavender" cx="56%" cy="54%" r="38%">
+      <stop offset="0%" stop-color="#DCC9EF" stop-opacity="0.86"/>
+      <stop offset="44%" stop-color="#DCC9EF" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="body" cx="50%" cy="50%" r="20%">
+      <stop offset="0%" stop-color="#F4C9D6" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#DCC9EF" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="10%">
+      <stop offset="0%" stop-color="#FFF8FC" stop-opacity="1"/>
+      <stop offset="45%" stop-color="#F4C9D6" stop-opacity="0.5"/>
       <stop offset="100%" stop-color="#DCC9EF" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1024" height="1024" fill="#07070c"/>
+  <rect width="1024" height="1024" fill="url(#wash)"/>
   <rect width="1024" height="1024" fill="url(#rose)"/>
   <rect width="1024" height="1024" fill="url(#lavender)"/>
+  <rect width="1024" height="1024" fill="url(#body)"/>
   <rect width="1024" height="1024" fill="url(#core)"/>
 </svg>
