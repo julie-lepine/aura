@@ -50,11 +50,11 @@ i18n — en, de, es (fr reste la source)
 [x] brancher palettes, glows, moods et messages dynamiques
 [x] ne pas traduire : aura, ids, AURA_NAMES, fichiers audio, charte
 [x] glow burst : éclat → flash (fr source)
-[ ] tester les 5 écrans + pause + save + consentement + gates, chaque langue
-[ ] contrôle visuel allemand (longueur des boutons) + aria-labels
-[ ] fiches play store en / de / es (+ privacy si encore fr only)
+[x] tester les 5 écrans + pause + save + consentement + gates, chaque langue
+[x] contrôle visuel allemand (longueur des boutons) + aria-labels
+[x] fiches play store en / de / es
 [ ] formulaire Google (UMP) → Langues supplémentaires
-[ ] traduire privacy
+[ ] traduire privacy — pas d’accès à l’éditeur du site ; URL FR inchangée
 
 Plus tard (pas v1)
 [ ] ios + att

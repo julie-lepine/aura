@@ -572,6 +572,15 @@
     return topMoments.find((item) => String(item.id) === sid) || signatureFrame;
   }
 
+  function getState() {
+    return {
+      signatureFrame,
+      selectedSignatureFrame: getSelected(),
+      topSignatureMoments: topMoments,
+      sampleCount: samples.length,
+    };
+  }
+
   function imageFileName(title, index) {
     const base = `aura-${slugify(title)}`;
     if (index == null) return `${base}.png`;
@@ -630,14 +639,7 @@
     imageFileName,
     exportPngBlob,
     exportAllPngBlobs,
-    getState() {
-      return {
-        signatureFrame,
-        selectedSignatureFrame: getSelected(),
-        topSignatureMoments: topMoments,
-        sampleCount: samples.length,
-      };
-    },
+    getState,
   };
 
   if (typeof window !== "undefined") window.AURA_SIGNATURE = api;
