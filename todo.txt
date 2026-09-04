@@ -53,7 +53,7 @@ i18n — en, de, es (fr reste la source)
 [x] tester les 5 écrans + pause + save + consentement + gates, chaque langue
 [x] contrôle visuel allemand (longueur des boutons) + aria-labels
 [x] fiches play store en / de / es
-[ ] formulaire Google (UMP) → Langues supplémentaires
+[ ] formulaire Google (UMP) → Langues supplémentaires (admob)
 [ ] traduire privacy — pas d’accès à l’éditeur du site ; URL FR inchangée
 
 Plus tard (pas v1)

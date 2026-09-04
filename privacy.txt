@@ -1,0 +1,152 @@
+English
+
+aura — Privacy policy
+
+This page describes data processing for the aura app (Android). It is hosted temporarily on revealthepartygame.fr. A move to the parent company’s site is planned; the Play / AdMob URL will then be updated.
+
+Who we are
+aura is a mobile visual creation app. The publisher is the same as for the REVEAL app (HAVEFUNCORP). Contact: contact@revealthepartygame.fr
+
+No account. No aura server. Your creations stay on your phone, unless you share them yourself.
+
+Data we collect
+On the device, by aura: your ad-consent choice (stored locally); your auras (video and images) generated and saved locally.
+
+We have no user account, no email list, no aura database. We do not receive your creations, videos, or images.
+
+Via Google AdMob, if you use the app and according to your consent: advertising ID; technical data (device, OS, language, approximate country); data needed to show and measure ads.
+
+Purposes
+Run the app (remember your consent); show an interstitial ad after a creation, when you tap download; follow Google’s ads framework (EU: UMP consent form).
+
+We do not sell your data. We do not use a separate analytics tool today.
+
+Hosting and processors
+The app runs on your device. Google AdMob (Google Ireland Ltd / Google LLC) serves ads. This information page is served by revealthepartygame.fr until the move to the parent site.
+
+Advertising (AdMob)
+An interstitial may appear after you finish an aura, when you choose to download. No ads during creation, and none on the result screen itself.
+
+In the EU, a consent form (UMP) lets you accept or decline personalization. You can decline: the app still works; you still get your result even if no ad is shown.
+
+Google may process data under its own policy: https://policies.google.com/privacy — Google ads settings: https://adssettings.google.com
+
+Retention
+Your consent choice stays on the device until you uninstall or clear the app’s data. Auras you download are files on your phone; we keep no copy. Ad data is kept by Google for its own periods.
+
+Your rights (GDPR)
+Access, rectification, erasure, restriction, objection, portability where applicable, and a complaint to your data-protection authority (in France: CNIL). For aura: contact@revealthepartygame.fr. For Google ad data: the Google settings above.
+
+Children
+aura is not intended for children under 13. Between 13 and 15, parental agreement is recommended, especially for advertising.
+
+Security
+Traffic with Google (ads, consent) uses HTTPS. Your creations leave the device only if you export or share them.
+
+Changes
+This policy may be updated. The date at the top of the page is authoritative. Material changes will appear here before they are reflected on the Play listing.
+
+Contact
+contact@revealthepartygame.fr
+
+Deutsch (Sie, comme une datenschutzerklärung)
+
+aura — Datenschutzerklärung
+
+Diese Seite beschreibt die Datenverarbeitung der App aura (Android). Sie ist vorübergehend auf revealthepartygame.fr gehostet. Ein Umzug auf die Website des Mutterunternehmens ist geplant; die Play-/AdMob-URL wird dann aktualisiert.
+
+Wer wir sind
+aura ist eine mobile App für visuelle Gestaltung. Herausgeber ist derselbe wie bei der App REVEAL (HAVEFUNCORP). Kontakt: contact@revealthepartygame.fr
+
+Kein Konto. Kein aura-Server. Ihre Kreationen bleiben auf Ihrem Handy, außer Sie teilen sie selbst.
+
+Erhobene Daten
+Auf dem Gerät, durch aura: Ihre Werbeeinwilligung (lokal gespeichert); Ihre Auras (Video und Bilder), lokal erzeugt und gespeichert.
+
+Wir haben kein Nutzerkonto, keine E-Mail-Liste, keine aura-Datenbank. Wir empfangen Ihre Kreationen, Videos oder Bilder nicht.
+
+Über Google AdMob, wenn Sie die App nutzen und je nach Einwilligung: Werbe-ID; technische Daten (Gerät, OS, Sprache, ungefähres Land); Daten für Anzeige und Messung von Werbung.
+
+Zwecke
+Betrieb der App (Speichern Ihrer Einwilligung); Anzeige eines Interstitials nach einer Kreation, beim Speichern; Einhaltung des Google-Werberahmens (EU: UMP-Einwilligung).
+
+Wir verkaufen Ihre Daten nicht. Wir nutzen derzeit kein separates Analyse-Tool.
+
+Hosting und Auftragsverarbeiter
+Die App läuft auf Ihrem Gerät. Google AdMob (Google Ireland Ltd / Google LLC) liefert die Werbung. Diese Informationsseite wird von revealthepartygame.fr ausgeliefert, bis zum Umzug auf die Website des Mutterunternehmens.
+
+Werbung (AdMob)
+Ein Interstitial kann erscheinen, nachdem Sie eine Aura beendet haben, wenn Sie speichern. Keine Werbung während der Gestaltung und nicht auf dem Ergebnisbildschirm selbst.
+
+In der EU können Sie über ein Einwilligungsformular (UMP) Personalisierung akzeptieren oder ablehnen. Ablehnen ist möglich: die App bleibt nutzbar; das Ergebnis erscheint auch ohne Werbung.
+
+Google kann Daten gemäß eigener Richtlinie verarbeiten: https://policies.google.com/privacy — Google-Anzeigeneinstellungen: https://adssettings.google.com
+
+Speicherdauer
+Die Einwilligung bleibt auf dem Gerät bis zur Deinstallation oder zum Löschen der App-Daten. Heruntergeladene Auras sind Dateien auf Ihrem Handy; wir behalten keine Kopie. Werbedaten speichert Google nach eigenen Fristen.
+
+Ihre Rechte (DSGVO)
+Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch, Datenübertragbarkeit soweit einschlägig, und Beschwerde bei einer Aufsichtsbehörde (in Frankreich: CNIL). Für aura: contact@revealthepartygame.fr. Für Google-Werbedaten: die oben genannten Google-Einstellungen.
+
+Minderjährige
+aura ist nicht für Kinder unter 13 Jahren bestimmt. Zwischen 13 und 15 Jahren wird eine elterliche Zustimmung empfohlen, insbesondere wegen der Werbung.
+
+Sicherheit
+Die Verbindung zu Google (Werbung, Einwilligung) erfolgt über HTTPS. Ihre Kreationen verlassen das Gerät nur, wenn Sie sie exportieren oder teilen.
+
+Änderungen
+Diese Erklärung kann aktualisiert werden. Das Datum oben auf der Seite gilt. Wesentliche Änderungen erscheinen hier, bevor sie in der Play-fiche übernommen werden.
+
+Kontakt
+contact@revealthepartygame.fr
+
+Español
+
+aura — Política de privacidad
+
+Esta página describe el tratamiento de datos de la app aura (Android). Está alojada temporalmente en revealthepartygame.fr. Está previsto el traslado al sitio de la empresa matriz; entonces se actualizará la URL de Play / AdMob.
+
+Quiénes somos
+aura es una app móvil de creación visual. El editor es el mismo que el de la app REVEAL (HAVEFUNCORP). Contacto: contact@revealthepartygame.fr
+
+Sin cuenta. Sin servidor aura. Tus creaciones se quedan en tu teléfono, salvo que las compartas tú.
+
+Datos que se recogen
+En el dispositivo, por aura: tu elección de consentimiento publicitario (guardada en local); tus auras (vídeo e imágenes) generadas y guardadas en local.
+
+No hay cuenta de usuario, ni lista de correos, ni base de datos aura. No recibimos tus creaciones, vídeos ni imágenes.
+
+A través de Google AdMob, si usas la app y según tu consentimiento: identificador publicitario; datos técnicos (dispositivo, sistema, idioma, país aproximado); datos necesarios para mostrar y medir anuncios.
+
+Finalidades
+Hacer funcionar la app (recordar tu consentimiento); mostrar un intersticial después de una creación, al guardar; cumplir el marco publicitario de Google (UE: formulario UMP).
+
+No vendemos tus datos. Hoy no usamos una herramienta de audiencia aparte (tipo analytics).
+
+Alojamiento y encargados
+La app funciona en tu dispositivo. Google AdMob (Google Ireland Ltd / Google LLC) sirve los anuncios. Esta página la sirve revealthepartygame.fr hasta el traslado al sitio de la empresa matriz.
+
+Publicidad (AdMob)
+Puede aparecer un intersticial cuando terminas un aura y eliges descargar. No hay anuncios durante la creación ni en la propia pantalla de resultado.
+
+En la UE, un formulario de consentimiento (UMP) permite aceptar o rechazar la personalización. Puedes rechazar: la app sigue funcionando; ves el resultado aunque no se muestre ningún anuncio.
+
+Google puede tratar datos según su propia política: https://policies.google.com/privacy — Ajustes de anuncios de Google: https://adssettings.google.com
+
+Conservación
+La elección de consentimiento permanece en el dispositivo hasta desinstalar o borrar los datos de la app. Las auras que descargas son archivos en tu teléfono; no guardamos copia. Los datos publicitarios los conserva Google según sus plazos.
+
+Tus derechos (RGPD)
+Acceso, rectificación, supresión, limitación, oposición, portabilidad cuando proceda, y reclamación ante la autoridad de protección de datos (en Francia: CNIL). Para aura: contact@revealthepartygame.fr. Para los datos publicitarios de Google: los ajustes de Google indicados arriba.
+
+Menores
+aura no está destinada a menores de 13 años. Entre 13 y 15 años se recomienda el acuerdo parental, sobre todo por la publicidad.
+
+Seguridad
+La conexión con Google (anuncios, consentimiento) usa HTTPS. Tus creaciones solo salen del dispositivo si las exportas o las compartes.
+
+Cambios
+Esta política puede actualizarse. La fecha al inicio de la página es la de referencia. Los cambios importantes aparecerán aquí antes de reflejarse en la ficha de Play.
+
+Contacto
+contact@revealthepartygame.fr
