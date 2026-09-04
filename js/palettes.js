@@ -104,7 +104,7 @@
     { id: "soft", name: "doux", available: true },
     { id: "spark", name: "étincelle", available: true },
     { id: "feu", name: "fumée", available: true },
-    { id: "burst", name: "éclat", available: true },
+    { id: "burst", name: "flash", available: true },
     { id: "liquid", name: "liquide", available: true },
     { id: "hearts", name: "cœurs", available: true },
   ];

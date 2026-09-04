@@ -22,7 +22,7 @@
     <section class="screen is-on" data-screen="intro" id="screen-intro">
       <div class="intro-glow" aria-hidden="true"></div>
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
-      <button type="button" class="btn-primary" id="btn-enter">
+      <button type="button" class="btn-primary" id="btn-enter" data-i18n="intro.enter">
         créer une aura
       </button>
     </section>
@@ -30,17 +30,17 @@
     <section class="screen" data-screen="consent" id="screen-consent">
       <div class="panel">
         <img class="logo logo-sm" src="assets/aura_logo.svg" alt="aura" />
-        <p>
+        <p data-i18n="consent.lede">
           aura affiche une pub avant le téléchargement.
         </p>
-        <p>
+        <p data-i18n="consent.detail">
           accepter personnalise cette pub. refuser : la pub s’affiche quand même, sans personnalisation ni tracking.
         </p>
         <div class="actions">
-          <button type="button" class="btn-primary" id="btn-accept">
+          <button type="button" class="btn-primary" id="btn-accept" data-i18n="consent.accept">
             accepter
           </button>
-          <button type="button" class="btn-ghost" id="btn-refuse">
+          <button type="button" class="btn-ghost" id="btn-refuse" data-i18n="consent.refuse">
             refuser
           </button>
           <a
@@ -48,6 +48,7 @@
             href="https://revealthepartygame.fr/aura.html"
             target="_blank"
             rel="noopener noreferrer"
+            data-i18n="consent.privacy"
           >
             politique de confidentialité
           </a>
@@ -60,25 +61,26 @@
         type="button"
         class="sound-toggle"
         id="btn-sound-toggle"
+        data-i18n-aria="config.soundOff"
         aria-label="désactiver la musique"
         aria-pressed="true"
       >
         <img src="assets/musical-note.png" alt="" />
       </button>
       <div class="configure">
-        <h1>ton aura</h1>
-        <p class="lede">choisis ton ambiance.</p>
+        <h1 data-i18n="config.title">ton aura</h1>
+        <p class="lede" data-i18n="config.lede">choisis ton ambiance.</p>
 
-        <h2>palette</h2>
+        <h2 data-i18n="config.palette">palette</h2>
         <div class="choice-row" id="palette-list"></div>
 
-        <h2>glow</h2>
+        <h2 data-i18n="config.glow">glow</h2>
         <div class="choice-row" id="glow-list"></div>
 
-        <h2>ambiance</h2>
+        <h2 data-i18n="config.mood">ambiance</h2>
         <div class="mood-row" id="mood-list"></div>
 
-        <button type="button" class="btn-primary btn-wide" id="btn-create">
+        <button type="button" class="btn-primary btn-wide" id="btn-create" data-i18n="config.create">
           créer mon aura
         </button>
       </div>
@@ -101,24 +103,24 @@
         <p class="result-meta" id="result-meta"></p>
         <p class="result-meta result-meta-sub" id="result-meta-sub"></p>
         <div id="result-moments" hidden>
-          <h2>moments</h2>
+          <h2 data-i18n="result.moments">moments</h2>
           <div id="result-moments-list"></div>
         </div>
         <div class="result-actions">
-          <button type="button" class="btn-primary btn-wide" id="btn-unlock-aura">
+          <button type="button" class="btn-primary btn-wide" id="btn-unlock-aura" data-i18n="result.downloadAura">
             télécharger mon aura
           </button>
-          <button type="button" class="btn-ghost" id="btn-download-image" hidden>
+          <button type="button" class="btn-ghost" id="btn-download-image" hidden data-i18n="result.downloadImage">
             télécharger l’image
           </button>
-          <button type="button" class="btn-ghost" id="btn-download-moments" hidden>
+          <button type="button" class="btn-ghost" id="btn-download-moments" hidden data-i18n="result.downloadMoments3">
             télécharger les 3
           </button>
-          <button type="button" class="btn-ghost" id="btn-download" hidden>
+          <button type="button" class="btn-ghost" id="btn-download" hidden data-i18n="result.downloadVideo">
             télécharger la vidéo
           </button>
           <p class="result-save-status" id="result-save-status" hidden></p>
-          <button type="button" class="btn-ghost" id="btn-new-aura">
+          <button type="button" class="btn-ghost" id="btn-new-aura" data-i18n="result.newAura">
             nouvelle aura
           </button>
         </div>
@@ -128,14 +130,14 @@
     <div id="create-controls" hidden>
       <div id="record-timer" hidden>00:00</div>
       <div class="create-controls-row">
-      <button type="button" class="ctrl" id="btn-stop" hidden aria-label="stop">
+      <button type="button" class="ctrl" id="btn-stop" hidden data-i18n-aria="create.stop" aria-label="stop">
         <img src="assets/aura_stop.svg" alt="" />
       </button>
       <div class="ctrl-main-slot">
-        <button type="button" class="ctrl ctrl-main" id="btn-play" aria-label="play">
+        <button type="button" class="ctrl ctrl-main" id="btn-play" data-i18n-aria="create.play" aria-label="play">
           <img src="assets/aura_play.svg" alt="" />
         </button>
-        <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden aria-label="pause">
+        <button type="button" class="ctrl ctrl-main" id="btn-pause" hidden data-i18n-aria="create.pause" aria-label="pause">
           <img src="assets/aura_pause.svg" alt="" />
         </button>
       </div>
@@ -146,16 +148,16 @@
       <div class="pause-edit-list" id="pause-glow-list" hidden></div>
       <div class="pause-edit-actions">
         <button type="button" class="pause-edit-toggle" id="btn-edit-palette">
-          modifier la palette
+          <span data-i18n="create.editPalette">modifier la palette</span>
           <span class="pause-edit-current" id="pause-palette-current">éclat</span>
         </button>
         <button type="button" class="pause-edit-toggle" id="btn-edit-glow">
-          modifier le glow
+          <span data-i18n="create.editGlow">modifier le glow</span>
           <span class="pause-edit-current" id="pause-glow-current">doux</span>
         </button>
       </div>
     </div>
-    <button type="button" class="ctrl ctrl-back" id="btn-back-config" hidden aria-label="retour à la personnalisation">
+    <button type="button" class="ctrl ctrl-back" id="btn-back-config" hidden data-i18n-aria="create.back" aria-label="retour à la personnalisation">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <defs>
           <linearGradient id="auraBackGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -177,15 +179,16 @@
 
     <div id="gate-desktop" class="gate" hidden>
       <img class="logo" src="assets/aura_logo.svg" alt="aura" />
-      <p>aura est une expérience conçue pour ton téléphone.</p>
+      <p data-i18n="gate.desktop">aura est une expérience conçue pour ton téléphone.</p>
     </div>
 
     <div id="gate-rotate" class="gate" hidden>
       <img class="logo logo-sm" src="assets/aura_logo.svg" alt="aura" />
-      <p>tourne ton téléphone en portrait</p>
+      <p data-i18n="gate.rotate">tourne ton téléphone en portrait</p>
     </div>
 
     <script src="js/palettes.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/app.js"></script>
     <script src="js/ads.js"></script>
     <script src="js/record.js"></script>

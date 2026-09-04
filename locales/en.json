@@ -1,0 +1,78 @@
+{
+  "intro": {
+    "enter": "create an aura"
+  },
+  "consent": {
+    "lede": "aura shows an ad before download.",
+    "detail": "accept personalizes this ad. decline: the ad still shows, without personalization or tracking.",
+    "accept": "accept",
+    "refuse": "decline",
+    "privacy": "privacy policy"
+  },
+  "config": {
+    "title": "your aura",
+    "lede": "choose your mood.",
+    "palette": "palette",
+    "glow": "glow",
+    "mood": "mood",
+    "create": "create my aura",
+    "soundOff": "turn music off",
+    "soundOn": "turn music on"
+  },
+  "create": {
+    "editPalette": "edit palette",
+    "editGlow": "edit glow",
+    "play": "play",
+    "pause": "pause",
+    "stop": "stop",
+    "back": "back to setup"
+  },
+  "result": {
+    "moments": "moments",
+    "downloadAura": "download my aura",
+    "downloadImage": "download image",
+    "downloadMoments2": "download both",
+    "downloadMoments3": "download all 3",
+    "downloadVideo": "download video",
+    "newAura": "new aura",
+    "saving": "saving…",
+    "saved": "saved to your photos",
+    "saveFailed": "couldn’t save"
+  },
+  "gate": {
+    "desktop": "aura is made for your phone.",
+    "rotate": "turn your phone to portrait"
+  },
+  "palettes": {
+    "default": "flare",
+    "dawn": "dawn",
+    "tide": "tide",
+    "garden": "garden",
+    "moon": "moon",
+    "ember": "ember",
+    "pearl": "pearl",
+    "night": "night"
+  },
+  "glows": {
+    "soft": "soft",
+    "spark": "spark",
+    "feu": "smoke",
+    "burst": "flash",
+    "liquid": "liquid",
+    "hearts": "hearts"
+  },
+  "moods": {
+    "calm": {
+      "name": "calm",
+      "lede": "take your time."
+    },
+    "flow": {
+      "name": "flow",
+      "lede": "let yourself drift."
+    },
+    "wild": {
+      "name": "wild",
+      "lede": "let the energy rise."
+    }
+  }
+}

@@ -35,15 +35,29 @@ Technique
 
 Reco
 [x] build apk/aab de test — aab envoyé, groupe de testeurs créé
-[ ] play internal testing, téléphone android réel — après feu vert play
-[ ] vérifier le flow stop → pub → résultat
+[x] play internal testing, téléphone android réel — après feu vert play
+[x] vérifier le flow stop → pub → résultat
 [ ] vérifier le flow sans pub (refus, no fill)
 [ ] reco play + admob
 [ ] passer aux ids production
 
+i18n — en, de, es (fr reste la source)
+[x] trancher : 4 langues (fr + en + de + es), détection auto téléphone, repli fr
+[x] inventaire des chaînes (html + flow.js + palettes / glows / moods)
+[x] dictionnaire fr.json (clés stables, texte actuel)
+[x] mécanisme i18n : détection, t(), data-i18n, lang sur html
+[x] traductions en / de / es (ton : bas-de-casse, court, tu / du / tú)
+[x] brancher palettes, glows, moods et messages dynamiques
+[x] ne pas traduire : aura, ids, AURA_NAMES, fichiers audio, charte
+[x] glow burst : éclat → flash (fr source)
+[ ] tester les 5 écrans + pause + save + consentement + gates, chaque langue
+[ ] contrôle visuel allemand (longueur des boutons) + aria-labels
+[ ] fiches play store en / de / es (+ privacy si encore fr only)
+[ ] formulaire Google (UMP) → Langues supplémentaires
+[ ] traduire privacy
+
 Plus tard (pas v1)
 [ ] ios + att
-[ ] i18n
 [ ] rewarded pour télécharger
 [ ] bannière
 [ ] cmp iab complet

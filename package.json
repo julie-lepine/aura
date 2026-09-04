@@ -2,7 +2,7 @@
   "name": "aura",
   "private": true,
   "scripts": {
-    "test": "node tests/signature.test.js",
+    "test": "node tests/signature.test.js && node tests/i18n.test.js",
     "icon": "node scripts/makeAppIcon.mjs",
     "assets:sync": "node scripts/makeAppIcon.mjs",
     "cap:sync-web": "node scripts/syncCapWeb.mjs",

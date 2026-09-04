@@ -1,0 +1,78 @@
+{
+  "intro": {
+    "enter": "eine aura erstellen"
+  },
+  "consent": {
+    "lede": "aura zeigt vor dem speichern eine werbung.",
+    "detail": "akzeptieren personalisiert diese werbung. ablehnen: die werbung erscheint trotzdem, ohne personalisierung und tracking.",
+    "accept": "akzeptieren",
+    "refuse": "ablehnen",
+    "privacy": "datenschutz"
+  },
+  "config": {
+    "title": "deine aura",
+    "lede": "wähle deine stimmung.",
+    "palette": "palette",
+    "glow": "glow",
+    "mood": "stimmung",
+    "create": "meine aura erstellen",
+    "soundOff": "musik aus",
+    "soundOn": "musik ein"
+  },
+  "create": {
+    "editPalette": "palette ändern",
+    "editGlow": "glow ändern",
+    "play": "play",
+    "pause": "pause",
+    "stop": "stop",
+    "back": "zurück zur gestaltung"
+  },
+  "result": {
+    "moments": "momente",
+    "downloadAura": "meine aura speichern",
+    "downloadImage": "bild speichern",
+    "downloadMoments2": "beide speichern",
+    "downloadMoments3": "alle 3 speichern",
+    "downloadVideo": "video speichern",
+    "newAura": "neue aura",
+    "saving": "speichern…",
+    "saved": "in deinen fotos gespeichert",
+    "saveFailed": "speichern nicht möglich"
+  },
+  "gate": {
+    "desktop": "aura ist für dein handy gemacht.",
+    "rotate": "drehe dein handy ins hochformat"
+  },
+  "palettes": {
+    "default": "glanz",
+    "dawn": "dämmerung",
+    "tide": "flut",
+    "garden": "garten",
+    "moon": "mond",
+    "ember": "glut",
+    "pearl": "perlmutt",
+    "night": "nacht"
+  },
+  "glows": {
+    "soft": "sanft",
+    "spark": "funke",
+    "feu": "rauch",
+    "burst": "blitz",
+    "liquid": "flüssig",
+    "hearts": "herzen"
+  },
+  "moods": {
+    "calm": {
+      "name": "ruhig",
+      "lede": "nimm dir zeit."
+    },
+    "flow": {
+      "name": "fluss",
+      "lede": "lass dich treiben."
+    },
+    "wild": {
+      "name": "lebhaft",
+      "lede": "lass die energie steigen."
+    }
+  }
+}

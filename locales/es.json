@@ -1,0 +1,78 @@
+{
+  "intro": {
+    "enter": "crear un aura"
+  },
+  "consent": {
+    "lede": "aura muestra un anuncio antes de descargar.",
+    "detail": "aceptar personaliza este anuncio. rechazar: el anuncio se muestra igual, sin personalización ni rastreo.",
+    "accept": "aceptar",
+    "refuse": "rechazar",
+    "privacy": "política de privacidad"
+  },
+  "config": {
+    "title": "tu aura",
+    "lede": "elige tu ambiente.",
+    "palette": "paleta",
+    "glow": "glow",
+    "mood": "ambiente",
+    "create": "crear mi aura",
+    "soundOff": "desactivar la música",
+    "soundOn": "activar la música"
+  },
+  "create": {
+    "editPalette": "cambiar paleta",
+    "editGlow": "cambiar glow",
+    "play": "play",
+    "pause": "pause",
+    "stop": "stop",
+    "back": "volver a la personalización"
+  },
+  "result": {
+    "moments": "momentos",
+    "downloadAura": "descargar mi aura",
+    "downloadImage": "descargar la imagen",
+    "downloadMoments2": "descargar las 2",
+    "downloadMoments3": "descargar las 3",
+    "downloadVideo": "descargar el vídeo",
+    "newAura": "nueva aura",
+    "saving": "guardando…",
+    "saved": "guardado en tus fotos",
+    "saveFailed": "no se pudo guardar"
+  },
+  "gate": {
+    "desktop": "aura está pensada para tu teléfono.",
+    "rotate": "gira tu teléfono en vertical"
+  },
+  "palettes": {
+    "default": "brillo",
+    "dawn": "alba",
+    "tide": "marea",
+    "garden": "jardín",
+    "moon": "luna",
+    "ember": "brasa",
+    "pearl": "nácar",
+    "night": "noche"
+  },
+  "glows": {
+    "soft": "suave",
+    "spark": "chispa",
+    "feu": "humo",
+    "burst": "destello",
+    "liquid": "líquido",
+    "hearts": "corazones"
+  },
+  "moods": {
+    "calm": {
+      "name": "calma",
+      "lede": "tómate tu tiempo."
+    },
+    "flow": {
+      "name": "flujo",
+      "lede": "déjate llevar."
+    },
+    "wild": {
+      "name": "viva",
+      "lede": "deja que suba la energía."
+    }
+  }
+}

@@ -41,4 +41,5 @@ for (const file of files) copyFile(file);
 copyDir("js");
 copyDir("assets");
 copyDir("sons");
+copyDir("locales");
 console.log("www/ synchronisé");

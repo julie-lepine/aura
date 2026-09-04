@@ -69,6 +69,14 @@
 
   let timerRaf = 0;
 
+  function t(key) {
+    if (window.AURA_I18N && typeof window.AURA_I18N.t === "function") {
+      const value = window.AURA_I18N.t(key);
+      if (value) return value;
+    }
+    return "";
+  }
+
   function paletteById(id) {
     return window.AURA_PALETTES.find((item) => item.id === id) || window.AURA_PALETTES[0];
   }
@@ -136,7 +144,7 @@
     btnSoundToggle.setAttribute("aria-pressed", String(enabled));
     btnSoundToggle.setAttribute(
       "aria-label",
-      enabled ? "désactiver la musique" : "activer la musique"
+      enabled ? t("config.soundOff") : t("config.soundOn")
     );
   }
 
@@ -284,7 +292,9 @@
     });
     syncMomentSelection(selected);
     btnDownloadMoments.hidden = moments.length < 2;
-    btnDownloadMoments.textContent = moments.length === 2 ? "télécharger les 2" : "télécharger les 3";
+    btnDownloadMoments.textContent = t(
+      moments.length === 2 ? "result.downloadMoments2" : "result.downloadMoments3"
+    );
   }
 
   function setSaveStatus(text, button) {
@@ -303,7 +313,7 @@
   async function saveFiles(files, button) {
     if (!files || !files.length) return;
     setDownloadBusy(true);
-    setSaveStatus("enregistrement…", button);
+    setSaveStatus(t("result.saving"), button);
     try {
       const result = window.AURA_SAVE
         ? await window.AURA_SAVE.saveBlobs(files)
@@ -317,12 +327,12 @@
         return;
       }
       if (result.method === "gallery") {
-        setSaveStatus("enregistré dans tes photos", button);
+        setSaveStatus(t("result.saved"), button);
         return;
       }
       setSaveStatus("");
     } catch (err) {
-      setSaveStatus("enregistrement impossible", button);
+      setSaveStatus(t("result.saveFailed"), button);
     } finally {
       setDownloadBusy(false);
     }
@@ -1019,7 +1029,7 @@
       }
     }
     if (!blob) {
-      setSaveStatus("enregistrement impossible", downloadLink);
+      setSaveStatus(t("result.saveFailed"), downloadLink);
       return;
     }
     await saveFiles(
@@ -1049,7 +1059,7 @@
         btnDownloadImage
       );
     } catch (err) {
-      setSaveStatus("enregistrement impossible", btnDownloadImage);
+      setSaveStatus(t("result.saveFailed"), btnDownloadImage);
     }
   });
 
@@ -1066,7 +1076,7 @@
         btnDownloadMoments
       );
     } catch (err) {
-      setSaveStatus("enregistrement impossible", btnDownloadMoments);
+      setSaveStatus(t("result.saveFailed"), btnDownloadMoments);
     }
   });
 
@@ -1075,16 +1085,26 @@
     leaveResultToConfig();
   });
 
-  renderPaletteCards();
-  renderGlowCards();
-  renderPauseGlowCards();
-  renderPausePaletteCards();
-  renderMoodCards();
-  syncSoundToggle();
-  tryLockPortrait();
-  updateViewportMode();
-  history.replaceState({ screen: APP_SCREENS.HOME }, "", "#");
-  go(APP_SCREENS.HOME, { silent: true });
+  function bootUi() {
+    renderPaletteCards();
+    renderGlowCards();
+    renderPauseGlowCards();
+    renderPausePaletteCards();
+    renderMoodCards();
+    syncSoundToggle();
+    syncPauseGlowSelection();
+    syncPausePaletteSelection();
+    tryLockPortrait();
+    updateViewportMode();
+    history.replaceState({ screen: APP_SCREENS.HOME }, "", "#");
+    go(APP_SCREENS.HOME, { silent: true });
+  }
+
+  if (window.AURA_I18N && window.AURA_I18N.ready) {
+    window.AURA_I18N.ready.then(bootUi);
+  } else {
+    bootUi();
+  }
   window.addEventListener("popstate", handlePopState);
   window.addEventListener("resize", () => {
     updateViewportMode();

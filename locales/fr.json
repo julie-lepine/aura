@@ -1,0 +1,78 @@
+{
+  "intro": {
+    "enter": "créer une aura"
+  },
+  "consent": {
+    "lede": "aura affiche une pub avant le téléchargement.",
+    "detail": "accepter personnalise cette pub. refuser : la pub s’affiche quand même, sans personnalisation ni tracking.",
+    "accept": "accepter",
+    "refuse": "refuser",
+    "privacy": "politique de confidentialité"
+  },
+  "config": {
+    "title": "ton aura",
+    "lede": "choisis ton ambiance.",
+    "palette": "palette",
+    "glow": "glow",
+    "mood": "ambiance",
+    "create": "créer mon aura",
+    "soundOff": "désactiver la musique",
+    "soundOn": "activer la musique"
+  },
+  "create": {
+    "editPalette": "modifier la palette",
+    "editGlow": "modifier le glow",
+    "play": "play",
+    "pause": "pause",
+    "stop": "stop",
+    "back": "retour à la personnalisation"
+  },
+  "result": {
+    "moments": "moments",
+    "downloadAura": "télécharger mon aura",
+    "downloadImage": "télécharger l’image",
+    "downloadMoments2": "télécharger les 2",
+    "downloadMoments3": "télécharger les 3",
+    "downloadVideo": "télécharger la vidéo",
+    "newAura": "nouvelle aura",
+    "saving": "enregistrement…",
+    "saved": "enregistré dans tes photos",
+    "saveFailed": "enregistrement impossible"
+  },
+  "gate": {
+    "desktop": "aura est une expérience conçue pour ton téléphone.",
+    "rotate": "tourne ton téléphone en portrait"
+  },
+  "palettes": {
+    "default": "éclat",
+    "dawn": "aube",
+    "tide": "marée",
+    "garden": "jardin",
+    "moon": "lune",
+    "ember": "braise",
+    "pearl": "nacre",
+    "night": "nuit"
+  },
+  "glows": {
+    "soft": "doux",
+    "spark": "étincelle",
+    "feu": "fumée",
+    "burst": "flash",
+    "liquid": "liquide",
+    "hearts": "cœurs"
+  },
+  "moods": {
+    "calm": {
+      "name": "calme",
+      "lede": "prends ton temps."
+    },
+    "flow": {
+      "name": "flot",
+      "lede": "laisse-toi porter."
+    },
+    "wild": {
+      "name": "vive",
+      "lede": "laisse l’énergie monter."
+    }
+  }
+}
