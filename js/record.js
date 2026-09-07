@@ -165,21 +165,37 @@
       freezeElapsed();
       rec.onstop = () => {
         const type = recorderState.mimeType || "video/webm";
-        recorderState.blob = new Blob(recorderState.chunks, { type });
-        recorderState.url = URL.createObjectURL(recorderState.blob);
-        recorderState.status = "ready";
-        recorderState.recorder = null;
-        if (recorderState.stream) {
-          recorderState.stream.getTracks().forEach((track) => {
-            try {
-              track.stop();
-            } catch (err) {
-              /* ignore */
-            }
-          });
-          recorderState.stream = null;
+        const raw = new Blob(recorderState.chunks, { type });
+        const mp4 = typeof window !== "undefined" ? window.AURA_MP4 : null;
+        const finish = (blob) => {
+          recorderState.blob = blob;
+          recorderState.url = URL.createObjectURL(blob);
+          recorderState.status = "ready";
+          recorderState.recorder = null;
+          if (recorderState.stream) {
+            recorderState.stream.getTracks().forEach((track) => {
+              try {
+                track.stop();
+              } catch (err) {
+                /* ignore */
+              }
+            });
+            recorderState.stream = null;
+          }
+          resolve(recorderState);
+        };
+
+        if (!mp4 || type.indexOf("mp4") === -1 || recorderState.elapsedMs <= 0) {
+          finish(raw);
+          return;
         }
-        resolve(recorderState);
+        raw
+          .arrayBuffer()
+          .then((buffer) => {
+            const patched = mp4.patchDuration(buffer, recorderState.elapsedMs);
+            finish(patched ? new Blob([patched], { type }) : raw);
+          })
+          .catch(() => finish(raw));
       };
       rec.onerror = () => {
         recorderState.status = "idle";

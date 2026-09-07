@@ -37,7 +37,7 @@ Reco
 [x] build apk/aab de test — aab envoyé, groupe de testeurs créé
 [x] play internal testing, téléphone android réel — après feu vert play
 [x] vérifier le flow stop → pub → résultat
-[ ] vérifier le flow sans pub (refus, no fill)
+[x] vérifier le flow sans pub (refus, no fill)
 [ ] reco play + admob
 [ ] passer aux ids production
 
@@ -53,8 +53,8 @@ i18n — en, de, es (fr reste la source)
 [x] tester les 5 écrans + pause + save + consentement + gates, chaque langue
 [x] contrôle visuel allemand (longueur des boutons) + aria-labels
 [x] fiches play store en / de / es
-[ ] formulaire Google (UMP) → Langues supplémentaires (admob)
-[ ] traduire privacy — pas d’accès à l’éditeur du site ; URL FR inchangée
+[x] formulaire Google (UMP) → Langues supplémentaires (admob)
+[x] traduire privacy — FR, EN, DE, ES ; URL inchangée
 
 Plus tard (pas v1)
 [ ] ios + att
